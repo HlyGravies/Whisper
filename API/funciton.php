@@ -1,6 +1,13 @@
 <?php
-    function validateUserData($postData){
+//QUAN
+    function validateUserData($pdo,$postData){
     $errorNums;
+    if (isUserIdExist($pdo, $postData['userId'])) {
+        $errorNums[] = "USERID_ALREADY_EXISTS";
+        return $errorNums; 
+    }
+    
+    
     if (empty($postData['userId'])) {
         $errorNums[] = "006";
     } elseif (strlen($postData['userId']) > 30) {
@@ -37,6 +44,14 @@
 
     function getUserInfo($pdo, $userId) {
         $getUserSql = "SELECT userId, userName, profile, iconPath FROM user WHERE userId = :userId";
+        $getUserStmt = $pdo->prepare($getUserSql);
+        $getUserStmt->bindParam(':userId', $userId);
+        $getUserStmt->execute();
+        return $getUserStmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    function isUserIdExist($pdo, $userId){
+        $getUserSql = "SELECT userId FROM user WHERE userId = :userId";
         $getUserStmt = $pdo->prepare($getUserSql);
         $getUserStmt->bindParam(':userId', $userId);
         $getUserStmt->execute();
