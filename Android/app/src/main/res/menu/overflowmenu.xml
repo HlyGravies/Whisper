@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="TimeLine"
+        android:id="@+id/TimelineActivity" />
+
+    <item android:title="Search"
+        android:id="@+id/SearchActivity" />
+
+    <item android:title="Whisper"
+        android:id="@+id/WhisperActivity" />
+
+    <item android:title="Profile"
+        android:id="@+id/ProfileActivity" />
+
+    <item android:title="UserEdit"
+        android:id="@+id/UserEditActivity" />
+
+    <item android:title="Logout"
+        android:id="@+id/Logout" />
+</menu>
