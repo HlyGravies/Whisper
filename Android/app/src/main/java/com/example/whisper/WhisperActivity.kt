@@ -29,8 +29,6 @@ class WhisperActivity : AppCompatActivity() {
         val wisperButton: Button = findViewById(R.id.wisperButton)
         val cancelButton: Button = findViewById(R.id.cancelButton)
         val myApp = application as MyApplication
-        val apiUrl = myApp.getApiUrl()
-        val loginUserId = myApp.getLoginUserId()
 
         wisperButton.setOnClickListener {
             if (wisperEdit.text.isBlank()) {
@@ -45,7 +43,7 @@ class WhisperActivity : AppCompatActivity() {
                 put("whisperText", whisperText)
             }.toString().toRequestBody(mediaType)
             val request = Request.Builder()
-                .url(apiUrl)
+                .url(myApp.apiUrl)
                 .post(requestBody)
                 .build()
             client.newCall(request!!).enqueue(object : Callback{
@@ -68,7 +66,7 @@ class WhisperActivity : AppCompatActivity() {
                             return
                         }
                         val intent = Intent(this@WhisperActivity, UserInfoActivity::class.java)
-                        intent.putExtra("userId", loginUserId)
+                        intent.putExtra("userId", myApp.loginUserId)
 
 
                     }catch (e : Exception){
