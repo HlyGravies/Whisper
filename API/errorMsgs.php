@@ -21,6 +21,7 @@ $msgList = array(
   "ERR_PASSWORD_TOOLONG" => "パスワードを64文字以内で入力してください",
   "ERR_PROFILE_TOOLONG" => "プロフィールを200文字以内で入力してください",
   "ERR_CONTENT_TOOLONG" => "ささやき内容を256文字以内で入力してください",
+  "USERID_ALREADY_EXISTS" => "このUSERIDは既に使われています"
   // "ERR_ICONPATH_TOOLONG" => "検索区分が不正です",
 );
 

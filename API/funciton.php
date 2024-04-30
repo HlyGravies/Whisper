@@ -28,9 +28,6 @@
         if(mb_strlen($userData['profile'], 'UTF-8') > 200){
             $errorNums[] = "ERR_PROFILE_TOOLONG";
         }
-        // if(strlen($userData['iconPath']) > 100){
-        //     $errorNums[] = "ERR_ICONPATH_TOOLONG";
-        // }
         if(!empty($errorNums)){
             return $errorNums;
         }else{
@@ -38,7 +35,36 @@
         }  
     }
 
-
+    function validateUserUpdateData($pdo, $userUpdateData){
+        $errorNums = array();
+        if (empty($userUpdateData['userId'])) {
+            $errorNums[] = "006";
+        } elseif (strlen($userUpdateData['userId']) > 30) {
+            $errorNums[] = "ERR_USERID_TOOLONG";
+        }
+    
+        if (empty($userUpdateData['userName'])) {
+            $errorNums[] = "011";
+        } elseif (strlen($userUpdateData['userName']) > 20) {
+            $errorNums[] = "ERR_USERNAME_TOOLONG";
+        }
+    
+        if (empty($userUpdateData['password'])) {
+            $errorNums[] = "007";
+        } elseif (strlen($userUpdateData['password']) > 64) {
+            $errorNums[] = "ERR_PASSWORD_TOOLONG";
+        }
+    
+        if(mb_strlen($userUpdateData['profile'], 'UTF-8') > 200){
+            $errorNums[] = "ERR_PROFILE_TOOLONG";
+        }
+        if(!empty($errorNums)){
+            return $errorNums;
+        } else {
+            return null;
+        }  
+    }
+    
     function validateWhisperData($pdo, $whisperData){
         $errorNums;
         if (empty($whisperData['userId'])) {
