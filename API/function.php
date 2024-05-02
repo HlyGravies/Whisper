@@ -64,6 +64,25 @@
             return null;
         }  
     }
+
+    function validateLoginData($loginData){
+        $errorNums = array();
+        if (empty($loginData['userId'])) {
+            $errorNums[] = "006";
+        } elseif (strlen($loginData['userId']) > 30) {
+            $errorNums[] = "ERR_USERID_TOOLONG";
+        }
+        if (empty($loginData['password'])) {
+            $errorNums[] = "007";
+        } elseif (strlen($loginData['password']) > 64) {
+            $errorNums[] = "ERR_PASSWORD_TOOLONG";
+        }
+        if(!empty($errorNums)){
+            return $errorNums;
+        } else {
+            return null;
+        }  
+    }
     
     function validateWhisperData($pdo, $whisperData){
         $errorNums;
@@ -134,4 +153,14 @@
         $getUserStmt->execute();
         return $getUserStmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    function userAuthentication($pdo, $loginData){
+        $getUserSql = "SELECT userId, password FROM user WHERE userId = :userId";
+        $getUserStmt = $pdo->prepare($getUserSql);
+        $getUserStmt->bindParam(':userId', $loginData["userId"]);
+        $getUserStmt->execute();
+        return $getUserStmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    
 ?>
