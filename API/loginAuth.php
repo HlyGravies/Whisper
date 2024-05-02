@@ -25,7 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }else{
         $response = setError($response, $errorNums);
-        $response["abc"] = $errorNums;
     }
     header('Content-Type: application/json');
     echo json_encode($response, JSON_UNESCAPED_UNICODE);
