@@ -10,8 +10,6 @@ $pdo = connect_db();
 $response = [
     "result"  => "success",
     "errorDetails" => null
-    // "errCode" => null,
-    // "errMsg"  => null,
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
