@@ -1,27 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/timeline"
         android:title="TimeLine"
-        android:orderInCategory="100" />
+        app:showAsAction="never"
+        />
     <item
         android:id="@+id/search"
         android:title="Search"
-        android:orderInCategory="100"/>
+        app:showAsAction="never"
+        />
     <item
         android:id="@+id/whisper"
         android:title="Whisper"
-        android:orderInCategory="100"/>
+        app:showAsAction="never"
+        />
     <item
         android:id="@+id/myprofile"
         android:title="Profile"
-        android:orderInCategory="100"/>
+        app:showAsAction="never"
+        />
     <item
         android:id="@+id/profileedit"
         android:title="UserEdit"
-        android:orderInCategory="100"/>
+        app:showAsAction="never"
+        />
     <item
         android:id="@+id/logout"
         android:title="Logout"
-        android:orderInCategory="100"/>
+        app:showAsAction="never"
+        />
 </menu>
