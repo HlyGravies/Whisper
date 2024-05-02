@@ -26,7 +26,6 @@ class UserEditActivity : AppCompatActivity() {
     private lateinit var userImage: ImageView
     private lateinit var userIdText: TextView
     lateinit var myApp : MyApplication
-    lateinit var toolbar: Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,9 +38,6 @@ class UserEditActivity : AppCompatActivity() {
         userImage = findViewById(R.id.userImage)
         userIdText = findViewById(R.id.userIdText)
         myApp = application as MyApplication
-        toolbar = findViewById(R.id.toolbar)
-
-        setSupportActionBar(toolbar)
 
         // Request user information
         val client = OkHttpClient()

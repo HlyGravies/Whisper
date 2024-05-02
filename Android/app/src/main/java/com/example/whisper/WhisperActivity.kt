@@ -28,7 +28,6 @@ class WhisperActivity : AppCompatActivity() {
     lateinit var wisperButton: Button
     lateinit var cancelButton: Button
     lateinit var myApp: MyApplication
-    lateinit var toolbar: Toolbar
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_whisper)
@@ -37,9 +36,6 @@ class WhisperActivity : AppCompatActivity() {
         wisperButton = findViewById(R.id.wisperButton)
         cancelButton = findViewById(R.id.cancelButton)
         myApp = application as MyApplication
-        toolbar = findViewById(R.id.toolbar)
-
-        setSupportActionBar(toolbar)
 
         wisperButton.setOnClickListener {
             if (wisperEdit.text.isBlank()) {
