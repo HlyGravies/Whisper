@@ -121,8 +121,8 @@ class WhisperActivity : AppCompatActivity() {
             }
 
             R.id.whisper -> {
-                val intent = Intent(this, WhisperActivity::class.java)
-                startActivity(intent)
+//                val intent = Intent(this, WhisperActivity::class.java)
+//                startActivity(intent)
             }
 
             R.id.myprofile -> {
@@ -142,7 +142,7 @@ class WhisperActivity : AppCompatActivity() {
                 myApp.loginUserId = ""
                 // Navigate to Login screen and clear previous screen info
                 val intent = Intent(this, LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+//                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
             }
         }

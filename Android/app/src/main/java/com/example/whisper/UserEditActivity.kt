@@ -10,7 +10,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import com.example.whisper.MyApplication.MyApplication
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
@@ -25,7 +24,7 @@ class UserEditActivity : AppCompatActivity() {
     private lateinit var cancelButton: Button
     private lateinit var userImage: ImageView
     private lateinit var userIdText: TextView
-    lateinit var myApp : MyApplication
+    private lateinit var myApp : MyApplication
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -146,8 +145,8 @@ class UserEditActivity : AppCompatActivity() {
             }
 
             R.id.profileedit -> {
-                val intent = Intent(this, UserEditActivity::class.java)
-                startActivity(intent)
+//                val intent = Intent(this, UserEditActivity::class.java)
+//                startActivity(intent)
             }
 
             R.id.logout -> {
