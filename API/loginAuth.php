@@ -6,10 +6,9 @@ include("function.php");
 $pdo = connect_db();
 
 $response = [
-    "result"  => "error", // Mặc định là error, chỉ đổi thành success khi có dữ liệu được trả về
-    "errCode" => null,    // Mã lỗi (nếu có)
-    "errMsg"  => null,    // Thông báo lỗi (nếu có)
-    //"userData"    => $userData    
+    "result"  => "error",
+    "errCode" => null, 
+    "errMsg"  => null,  
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -17,10 +16,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $errorNums = validateLoginData($postData);
 
-    if($errorNums == null){
-        
+    if($errorNums === null){
+        if(isUserIdExist($pdo, $postData['userId']) && userAuthentication($pdo, $postData)){
+            $response["result"] = "success";
+            $response["userData"] = getUserInfo($pdo, $postData["userId"]);
+        }else{
+            $response = setError($response, "003");
+        }
     }else{
         $response = setError($response, $errorNums);
+        $response["abc"] = $errorNums;
     }
     header('Content-Type: application/json');
     echo json_encode($response, JSON_UNESCAPED_UNICODE);
