@@ -94,6 +94,39 @@
         return $getUserStmt->fetch(PDO::FETCH_ASSOC);
     }
 
+
+    function getWhisperInfo($pdo, $whisperNo) {
+        $getUserSql = 
+            "SELECT 
+                whisper.whisperNo, 
+                whisper.userId, 
+                user.userName, 
+                whisper.postDate, 
+                whisper.content, 
+                COUNT(DISTINCT goodInfo.userId) AS goodCount
+            FROM 
+                whisper
+            INNER JOIN 
+                user ON whisper.userId = user.userId
+            INNER JOIN 
+                goodInfo ON whisper.whisperNo = goodInfo.whisperNo
+            WHERE 
+                whisper.whisperNo = :whisperNo
+            GROUP BY
+                whisper.whisperNo, 
+                whisper.userId, 
+                user.userName, 
+                whisper.postDate, 
+                whisper.content";
+    
+        $getUserStmt = $pdo->prepare($getUserSql);
+        $getUserStmt->bindParam(':whisperNo', $whisperNo);
+        $getUserStmt->execute();
+        return $getUserStmt->fetch(PDO::FETCH_ASSOC);
+    }
+    
+    
+
     function isUserIdExist($pdo, $userId){
         $getUserSql = "SELECT userId FROM user WHERE userId = :userId";
         $getUserStmt = $pdo->prepare($getUserSql);
