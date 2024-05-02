@@ -61,7 +61,7 @@ class LoginActivity : AppCompatActivity() {
                     override fun onResponse(call: Call, response: Response) {
                         try {
                             myApp.loginUserId = UserId.toString()
-                            val insert = Intent(this@LoginActivity, MainActivity::class.java)
+                            val insert = Intent(this@LoginActivity, TimelineActivity::class.java)
                             startActivity(insert)
                         } catch (e: Exception) {
                             //1-2-4
@@ -74,7 +74,7 @@ class LoginActivity : AppCompatActivity() {
             //1-3
             createUser.setOnClickListener {
                 //1-3-1
-                val insert = Intent(this@LoginActivity, MainActivity::class.java)
+                val insert = Intent(this@LoginActivity, UserEditActivity::class.java)
                 startActivity(insert)
             }
         }
