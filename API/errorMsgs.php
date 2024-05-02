@@ -20,10 +20,9 @@ $msgList = array(
   "ERR_USERNAME_TOOLONG" => "USERNAMEを30文字以内で入力してください",
   "ERR_PASSWORD_TOOLONG" => "パスワードを64文字以内で入力してください",
   "ERR_PROFILE_TOOLONG" => "プロフィールを200文字以内で入力してください",
+  "ERR_CONTENT_TOOLONG" => "ささやき内容を256文字以内で入力してください",
+  "USERID_ALREADY_EXISTS" => "このUSERIDは既に使われています"
   // "ERR_ICONPATH_TOOLONG" => "検索区分が不正です",
-
-
-
 );
 
 
@@ -40,19 +39,5 @@ function setError($response, $errorNums){
   
   return $response;
 }
-
-// function setError($response, $errorNums){
-//   global $msgList;
-//   $response["result"] = "error";
-//   foreach ($errorNums as $errorNum) {
-//     $response["errCode"] .= $errorNum . ",";
-//     $response["errMsg"] .= $msgList[$errorNum] . ",";
-//   }
-//   $response["errCode"] = rtrim($response["errCode"], ",");
-//   $response["errMsg"] = rtrim($response["errMsg"], ",");
-
-  
-//   return $response;
-// }
 
 ?>

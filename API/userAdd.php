@@ -13,32 +13,32 @@ $response = [
     // "errCode" => null,
     // "errMsg"  => null,
 ];
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $postData = json_decode(file_get_contents('php://input'), true);
+    $userData = json_decode(file_get_contents('php://input'), true);
     
-    $errorNums = validateUserData($pdo,$postData);
+    $errorNums = validateUserData($pdo, $userData);
     if ($errorNums === null){
         $sql = "INSERT INTO user (userId, userName, password, profile, iconPath) VALUES (:userId, :userName, :password, :profile, :iconPath)";
         try {
             $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':userId', $postData['userId']);
-            $stmt->bindParam(':userName', $postData['userName']);
-            $stmt->bindParam(':password', $postData['password']);
-            $stmt->bindParam(':profile', $postData['profile']);
-            $stmt->bindParam(':iconPath', $postData['iconPath']);
+            $stmt->bindParam(':userId', $userData['userId']);
+            $stmt->bindParam(':userName', $userData['userName']);
+            $stmt->bindParam(':password', $userData['password']);
+            $stmt->bindParam(':profile', $userData['profile']);
+            $stmt->bindParam(':iconPath', $userData['iconPath']);
             $stmt->execute();
-            $userData = getUserInfo($pdo, $postData['userId']);;
+            $userData = getUserInfo($pdo, $userData['userId']);;
             $response['result'] = "success";
             $response['userData'] = $userData;
         } catch (PDOException $e) {
             echo "Lỗi: " . $e->getMessage();
         }
-    }else{
+    } else {
         $response = setError($response, $errorNums);
     }
 }
 
-$response['asdfdsaf'] = $errorNums;
 header('Content-Type: application/json');
 echo json_encode($response, JSON_UNESCAPED_UNICODE);
 
