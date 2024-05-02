@@ -2,7 +2,7 @@
 include ("mysqlConnect.php");
 include("mysqlClose.php");
 include("errorMsgs.php");
-include("funciton.php");
+include("function.php");
 $pdo = connect_db();
 
 $response = [

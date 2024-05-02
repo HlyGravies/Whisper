@@ -154,5 +154,13 @@
         return $getUserStmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    function userAuthentication($pdo, $loginData){
+        $getUserSql = "SELECT userId, password FROM user WHERE userId = :userId";
+        $getUserStmt = $pdo->prepare($getUserSql);
+        $getUserStmt->bindParam(':userId', $loginData["userId"]);
+        $getUserStmt->execute();
+        return $getUserStmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     
 ?>
