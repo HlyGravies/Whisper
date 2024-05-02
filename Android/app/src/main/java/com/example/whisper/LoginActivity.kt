@@ -3,7 +3,7 @@ package com.example.whisper
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.telecom.Call
+import okhttp3.Call
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -39,9 +39,10 @@ class LoginActivity : AppCompatActivity() {
             val request = Request.Builder().url("http://10.0.2.2/SampleProject/sample.php").post(requestBody.toRequestBody(mediaType)).build()
 
             // リクエスト送信（非同期処理）
+
             client.newCall(request!!).enqueue(object : Callback {
                 // リクエストが失敗した場合の処理を実装
-                override fun onFailure(call: Call<>, e: IOException) {
+                override fun onFailure(call: Call, e: IOException) {
                     // runOnUiThreadメソッドを使うことでUIを操作することができる。(postメソッドでも可)
                     this@LoginActivity.runOnUiThread {
                         //ここにToastでエラーを表示する
@@ -49,15 +50,13 @@ class LoginActivity : AppCompatActivity() {
                     }
                 }
                 // リクエストが成功した場合の処理を実装
-                override fun onResponse(call: Call<>, response: Response) {
+                override fun onResponse(call: Call, response: Response) {
                     try{
-
                         val insert = Intent(this@LoginActivity,MainActivity::class.java)
                         startActivity(insert)
                     }catch (e :Exception){
                         Toast.makeText(applicationContext,"${e.message}",Toast.LENGTH_LONG).show()
                     }
-
                 }
             })
         }
