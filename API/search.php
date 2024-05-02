@@ -2,7 +2,7 @@
 //Quan
 require_once 'mysqlConnect.php';
 require_once 'errorMsgs.php';
-require_once 'funciton.php';
+require_once 'function.php';
 $pdo = connect_db();
 
 
