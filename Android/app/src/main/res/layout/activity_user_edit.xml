@@ -6,22 +6,34 @@
     android:layout_height="match_parent"
     tools:context=".UserEditActivity">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:title="Whisper"
+        app:titleTextColor="@android:color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
     <TextView
         android:id="@+id/userEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="30dp"
         android:textSize="30sp"
         android:text="User Edit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
     <EditText
         android:id="@+id/userNameEdit"
         android:layout_width="250dp"
         android:layout_height="50dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/edittextshape"
         android:hint="UserName"
         app:layout_constraintEnd_toEndOf="parent"
@@ -32,7 +44,7 @@
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="25dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/userEditText">
@@ -60,17 +72,19 @@
         android:layout_marginTop="20dp"
         android:background="@drawable/edittextshape"
         android:inputType="text"
-        android:text="Name"
+        android:gravity="start"
+        android:hint="Profile"
         app:layout_constraintEnd_toEndOf="@+id/userNameEdit"
         app:layout_constraintStart_toStartOf="@+id/userNameEdit"
         app:layout_constraintTop_toBottomOf="@+id/userNameEdit" />
 
     <Button
         android:id="@+id/changeButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
+        android:layout_width="210dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="35dp"
         android:backgroundTint="@color/blue"
+        android:gravity="center"
         android:text="Change"
         app:layout_constraintEnd_toEndOf="@+id/profileEdit"
         app:layout_constraintStart_toStartOf="@+id/profileEdit"
@@ -78,8 +92,8 @@
 
     <Button
         android:id="@+id/cancelButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
         android:layout_marginTop="16dp"
         android:backgroundTint="@color/blue"
         android:text="Cancel"
