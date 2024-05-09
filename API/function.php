@@ -1,5 +1,19 @@
 <?php
 //QUAN
+
+    function checkUserId($pdo, $postData){
+        $errorNums;
+        if (isUserIdExist($pdo, $postData['userId'])) {
+            $errorNums[] = "USERID_ALREADY_EXISTS";
+            return $errorNums; 
+        }
+        if (empty($postData['userId'])) {
+            $errorNums[] = "006";
+        } elseif (strlen($postData['userId']) > 30) {
+            $errorNums[] = "ERR_USERID_TOOLONG";
+        }
+    }
+
     function validateUserData($pdo, $userData){
         $errorNums;
         if (isUserIdExist($pdo, $userData['userId'])) {
@@ -162,7 +176,61 @@
         $getUserStmt->execute();
         return $getUserStmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    function getTimeLineByUserId($pdo, $userId){
+        $getFollowUserIdSql = "SELECT followUserId FROM follow WHERE userId = :userId";
+        $getFolllowUserIdStmt = $pdo->prepare($getFollowUserIdSql);
+        $getFolllowUserIdStmt->bindParam(':userId', $userId);
+        $getFolllowUserIdStmt->execute();
     
+        $followUserIds = $getFolllowUserIdStmt->fetchAll(PDO::FETCH_COLUMN);
+    
+        $followUserIdString = implode(', ', $followUserIds);
+    
+        // Tạo danh sách placeholder
+        $placeholders = implode(', ', array_fill(0, count($followUserIds)+1, '?'));
+    
+        $getTimeLineInfoSql = 
+            "SELECT 
+                whisper.whisperNo, 
+                whisper.userId, 
+                user.userName, 
+                whisper.postDate, 
+                whisper.content
+            FROM 
+                whisper
+            INNER JOIN 
+                user ON whisper.userId = user.userId
+            -- INNER JOIN 
+            --     goodInfo ON whisper.whisperNo = goodInfo.whisperNo
+            WHERE 
+                whisper.userId IN ($placeholders)
+            GROUP BY
+                whisper.whisperNo, 
+                whisper.userId, 
+                user.userName, 
+                whisper.postDate, 
+                whisper.content
+            ORDER BY
+                whisper.postDate DESC";
+        $getTimelineInfoStmt = $pdo->prepare($getTimeLineInfoSql);
+        
+        // Bind các giá trị vào các placeholder
+        foreach ($followUserIds as $key => $value) {
+            $getTimelineInfoStmt->bindValue($key + 1, $value);
+        }
+        $getTimelineInfoStmt->bindValue(count($followUserIds) + 1, $userId);
+        $getTimelineInfoStmt->execute();
+        $whisperList = $getTimelineInfoStmt->fetchAll(PDO::FETCH_ASSOC);
+    
+
+
+        return $whisperList;
+
+
+    }
+    
+
     function userAuthentication($pdo, $loginData){
         $getUserSql = "SELECT password FROM user WHERE userId = :userId";
         $getUserStmt = $pdo->prepare($getUserSql);
