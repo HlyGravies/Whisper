@@ -105,6 +105,25 @@
     }
     
 
+    function validateFollowData($pdo, $followData){
+        $errorNums;
+        if (empty($followData['userId'])) {
+            $errorNums[] = "006";
+        } elseif (strlen($followData['userId']) > 30) {
+            $errorNums[] = "ERR_USERID_TOOLONG";
+        }
+        if (empty($followData['followUserId'])) {
+            $errorNums[] = "ERR_EMPTY_FOLLOWUSERID";
+        } elseif (strlen($followData['userId']) > 30) {
+            $errorNums[] = "ERR_FOLLOWUSERID_TOOLONG";
+        }
+        if(!empty($errorNums)){
+            return $errorNums;
+        }else{
+            return null;
+        }   
+    }
+
     function getUserInfo($pdo, $userId) {
         $getUserSql = "SELECT userId, userName, profile, iconPath FROM user WHERE userId = :userId";
         $getUserStmt = $pdo->prepare($getUserSql);
