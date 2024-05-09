@@ -1,5 +1,6 @@
 package com.example.whisper
 
+import android.content.ContentValues.TAG
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -12,19 +13,24 @@ import java.io.IOException
 import okhttp3.OkHttpClient
 import org.json.JSONObject
 import android.content.Intent
+import android.util.Log
+import com.example.whisper.MyApplication.MyApplication
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 
 class CreateUserActivity : AppCompatActivity() {
+    lateinit var myApp: MyApplication
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_user)
 
         val userNameEdit = findViewById<EditText>(R.id.userNameEdit)
         val userIdEdit = findViewById<EditText>(R.id.userIdEdit)
-        val passwordEdit = findViewById<EditText>(R.id.userIdEdit)
-        val rePasswordEdit = findViewById<EditText>(R.id.userIdEdit)
+        val passwordEdit = findViewById<EditText>(R.id.passwordEdit)
+        val rePasswordEdit = findViewById<EditText>(R.id.rePasswordEdit)
         val createButton = findViewById<Button>(R.id.createButton)
         val cancelButton = findViewById<Button>(R.id.cancelButton)
+        myApp = application as MyApplication
 
         createButton.setOnClickListener {
             val userName = userNameEdit.text.toString()
@@ -57,10 +63,14 @@ class CreateUserActivity : AppCompatActivity() {
     private fun createUser(userName: String, userId: String, password: String) {
         val client = OkHttpClient()
         val mediaType : MediaType = "application/json; charset=utf-8".toMediaType()
-        val requestBody = RequestBody.create(mediaType, "{\"userName\":\"$userName\", \"userId\":\"$userId\", \"password\":\"$password\"}")
+        val requestBody = JSONObject().apply {
+            put("userName", userName)
+            put("userId", userId)
+            put("password", password)
+        }.toString().toRequestBody(mediaType)
 
         val request = Request.Builder()
-            .url("http://10.200.2.137/sample.php")
+            .url(myApp.apiUrl+"userAdd.php")
             .post(requestBody)
             .build()
 
@@ -73,31 +83,31 @@ class CreateUserActivity : AppCompatActivity() {
             }
 
             override fun onResponse(call: Call, response: Response) {
-                if (!response.isSuccessful) {
+                val body = response.body?.string()
+                Log.d(TAG, "onResponse: $body")
+                if (!response.isSuccessful || body == null) {
                     runOnUiThread {
                         Toast.makeText(applicationContext, "Server error: ${response.code}", Toast.LENGTH_LONG).show()
                     }
                     return
                 }
 
-                response.body?.string()?.let {
-                    try {
-                        val jsonResponse = JSONObject(it)
-                        if (jsonResponse.has("error")) {
-                            runOnUiThread {
-                                Toast.makeText(applicationContext, jsonResponse.getString("error"), Toast.LENGTH_LONG).show()
-                            }
-                        } else {
-                            runOnUiThread {
-                                val intent = Intent(this@CreateUserActivity, MainActivity::class.java)
-                                startActivity(intent)
-                                finish()
-                            }
-                        }
-                    } catch (e: Exception) {
+                try {
+                    val jsonResponse = JSONObject(body)
+                    Log.d("API_RESPONSE", jsonResponse.toString())
+                    if (jsonResponse.has("error")) {
                         runOnUiThread {
-                            Toast.makeText(applicationContext, "Error parsing the response", Toast.LENGTH_LONG).show()
+                            Toast.makeText(applicationContext, jsonResponse.getString("error"), Toast.LENGTH_LONG).show()
                         }
+                    } else {
+                        runOnUiThread {
+                            Toast.makeText(applicationContext, "User created successfully", Toast.LENGTH_LONG).show()
+                            finish()
+                        }
+                    }
+                } catch (e: Exception) {
+                    runOnUiThread {
+                        Toast.makeText(applicationContext, "Error parsing the response", Toast.LENGTH_LONG).show()
                     }
                 }
             }

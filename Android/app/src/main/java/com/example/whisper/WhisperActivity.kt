@@ -12,6 +12,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import com.example.whisper.MyApplication.MyApplication
+import com.example.whisper.MyApplication.overMenu
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType
@@ -28,6 +29,7 @@ class WhisperActivity : AppCompatActivity() {
     lateinit var wisperButton: Button
     lateinit var cancelButton: Button
     lateinit var myApp: MyApplication
+    private lateinit var overMenu: overMenu
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_whisper)
@@ -36,6 +38,7 @@ class WhisperActivity : AppCompatActivity() {
         wisperButton = findViewById(R.id.wisperButton)
         cancelButton = findViewById(R.id.cancelButton)
         myApp = application as MyApplication
+        overMenu = overMenu(this)
 
         wisperButton.setOnClickListener {
             if (wisperEdit.text.isBlank()) {
@@ -102,50 +105,15 @@ class WhisperActivity : AppCompatActivity() {
             startActivity(intent)
         }
     }
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.overflowmenu, menu)
-        return super.onCreateOptionsMenu(menu)
+        // Gọi onCreateOptionsMenu từ overMenu
+        return overMenu.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.timeline -> {
-                val intent = Intent(this, TimelineActivity::class.java)
-                startActivity(intent)
-            }
-
-            R.id.search -> {
-                val intent = Intent(this, SearchActivity::class.java)
-                startActivity(intent)
-            }
-
-            R.id.whisper -> {
-//                val intent = Intent(this, WhisperActivity::class.java)
-//                startActivity(intent)
-            }
-
-            R.id.myprofile -> {
-                // Navigate to My Profile screen
-                val intent = Intent(this, UserInfoActivity::class.java)
-                intent.putExtra("userId", myApp.loginUserId)
-                startActivity(intent)
-            }
-
-            R.id.profileedit -> {
-                val intent = Intent(this, UserEditActivity::class.java)
-                startActivity(intent)
-            }
-
-            R.id.logout -> {
-                // Clear loginUserId global variable
-                myApp.loginUserId = ""
-                // Navigate to Login screen and clear previous screen info
-                val intent = Intent(this, LoginActivity::class.java)
-//                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-            }
-        }
-        return super.onOptionsItemSelected(item)
+        // Gọi onOptionsItemSelected từ overMenu
+        return overMenu.onOptionsItemSelected(item)
     }
+
+
 }
