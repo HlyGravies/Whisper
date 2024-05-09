@@ -89,7 +89,7 @@ class CreateUserActivity : AppCompatActivity() {
                             }
                         } else {
                             runOnUiThread {
-                                val intent = Intent(this@CreateUserActivity, TimelineActivity::class.java)
+                                val intent = Intent(this@CreateUserActivity, MainActivity::class.java)
                                 startActivity(intent)
                                 finish()
                             }
