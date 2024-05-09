@@ -20,7 +20,10 @@
             android:name=".MainActivity"
             android:exported="false" />
         <activity
-            android:name=".WhisperActivity"
+            android:name=".CreateUserActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
