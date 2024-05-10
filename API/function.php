@@ -223,13 +223,27 @@
         $getTimelineInfoStmt->execute();
         $whisperList = $getTimelineInfoStmt->fetchAll(PDO::FETCH_ASSOC);
     
-
+        foreach ($whisperList as $key => $whisper) {
+            $whisperList[$key]['goodFlg'] = getGoodFlag($pdo, $userId, $whisper['whisperNo']);
+        }        
 
         return $whisperList;
 
 
     }
     
+    function getGoodFlag($pdo, $userId, $whisperNo){
+        $sql = "SELECT * FROM goodInfo WHERE userId =:userId AND whisperNo= :whisperNo";
+        $stmtSql = $pdo->prepare($sql);
+        $stmtSql -> bindParam('userId',$userId);
+        $stmtSql -> bindParam('whisperNo',$whisperNo);
+        $stmtSql -> execute();
+        if(empty($stmtSql->fetch(PDO::FETCH_ASSOC))){
+            return false;
+        }else{
+            return true;
+        }
+    }
 
     function userAuthentication($pdo, $loginData){
         $getUserSql = "SELECT password FROM user WHERE userId = :userId";
