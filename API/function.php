@@ -1,6 +1,5 @@
 <?php
 //QUAN
-
     function checkUserId($pdo, $postData){
         $errorNums;
         if (isUserIdExist($pdo, $postData['userId'])) {
@@ -20,25 +19,21 @@
             $errorNums[] = "USERID_ALREADY_EXISTS";
             return $errorNums; 
         }
-        
         if (empty($userData['userId'])) {
             $errorNums[] = "006";
         } elseif (strlen($userData['userId']) > 30) {
             $errorNums[] = "ERR_USERID_TOOLONG";
         }
-
         if (empty($userData['userName'])) {
             $errorNums[] = "011";
         } elseif (strlen($userData['userName']) > 20) {
             $errorNums[] = "ERR_USERNAME_TOOLONG";
         }
-
         if (empty($userData['password'])) {
             $errorNums[] = "007";
         } elseif (strlen($userData['password']) > 64) {
             $errorNums[] = "ERR_PASSWORD_TOOLONG";
         }
-
         if(mb_strlen($userData['profile'], 'UTF-8') > 200){
             $errorNums[] = "ERR_PROFILE_TOOLONG";
         }
@@ -56,19 +51,16 @@
         } elseif (strlen($userUpdateData['userId']) > 30) {
             $errorNums[] = "ERR_USERID_TOOLONG";
         }
-    
         if (empty($userUpdateData['userName'])) {
             $errorNums[] = "011";
         } elseif (strlen($userUpdateData['userName']) > 20) {
             $errorNums[] = "ERR_USERNAME_TOOLONG";
         }
-    
         if (empty($userUpdateData['password'])) {
             $errorNums[] = "007";
         } elseif (strlen($userUpdateData['password']) > 64) {
             $errorNums[] = "ERR_PASSWORD_TOOLONG";
         }
-    
         if(mb_strlen($userUpdateData['profile'], 'UTF-8') > 200){
             $errorNums[] = "ERR_PROFILE_TOOLONG";
         }
@@ -105,7 +97,6 @@
         } elseif (strlen($whisperData['userId']) > 30) {
             $errorNums[] = "ERR_USERID_TOOLONG";
         }
-    
         if (empty($whisperData['content'])) {
             $errorNums[] = "005";
         } elseif (strlen($whisperData['content']) > 256) {
@@ -184,10 +175,7 @@
         $getFolllowUserIdStmt->execute();
     
         $followUserIds = $getFolllowUserIdStmt->fetchAll(PDO::FETCH_COLUMN);
-    
         $followUserIdString = implode(', ', $followUserIds);
-    
-        // Tạo danh sách placeholder
         $placeholders = implode(', ', array_fill(0, count($followUserIds)+1, '?'));
     
         $getTimeLineInfoSql = 
@@ -201,8 +189,6 @@
                 whisper
             INNER JOIN 
                 user ON whisper.userId = user.userId
-            -- INNER JOIN 
-            --     goodInfo ON whisper.whisperNo = goodInfo.whisperNo
             WHERE 
                 whisper.userId IN ($placeholders)
             GROUP BY
@@ -215,21 +201,16 @@
                 whisper.postDate DESC";
         $getTimelineInfoStmt = $pdo->prepare($getTimeLineInfoSql);
         
-        // Bind các giá trị vào các placeholder
         foreach ($followUserIds as $key => $value) {
             $getTimelineInfoStmt->bindValue($key + 1, $value);
         }
         $getTimelineInfoStmt->bindValue(count($followUserIds) + 1, $userId);
         $getTimelineInfoStmt->execute();
         $whisperList = $getTimelineInfoStmt->fetchAll(PDO::FETCH_ASSOC);
-    
         foreach ($whisperList as $key => $whisper) {
             $whisperList[$key]['goodFlg'] = getGoodFlag($pdo, $userId, $whisper['whisperNo']);
         }        
-
         return $whisperList;
-
-
     }
     
     function getGoodFlag($pdo, $userId, $whisperNo){
@@ -251,13 +232,11 @@
         $getUserStmt->bindParam(':userId', $loginData["userId"]);
         $getUserStmt->execute(); // Thực thi truy vấn
         $password = $getUserStmt->fetchColumn(); 
-
         if($loginData["password"] === $password){
             return true;
         }else{
             return false;
         }
-        
     }
 
     function isUserIdExist($pdo, $userId){
