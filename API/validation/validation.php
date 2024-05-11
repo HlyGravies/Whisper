@@ -1,6 +1,4 @@
 <?php
-    // include("function.php");
-    // include("database/database.php");
     function checkUserId($pdo, $userId){
         $errorNums;
         if (empty($userId)) {

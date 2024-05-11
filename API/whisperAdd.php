@@ -7,8 +7,6 @@ include("database/database.php");
 include("validation/validation.php");
 $pdo = connect_db();
 
-
-
 $response = [
     "result"  => "success",
     "errorDetails" => null

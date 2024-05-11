@@ -5,8 +5,6 @@ include("errorMsgs.php");
 // include("function.php");
 include("database/database.php");
 include("validation/validation.php");
-include ("mysqlClose.php");
-include ("errorMsgs.php");
 $pdo = connect_db();
 
 $response = [
