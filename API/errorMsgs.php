@@ -29,7 +29,8 @@ $msgList = array(
 );
 
 
-function setError($response, $errorNums){
+function setError($response, $errorNums)
+{
   global $msgList;
   $response["result"] = "error";
   $errorMap = [];
@@ -39,7 +40,7 @@ function setError($response, $errorNums){
 
   $response['errorDetails'] = $errorMap;
 
-  
+
   return $response;
 }
 
