@@ -129,6 +129,16 @@
         }   
     }
 
+    function validateGoodCtl($pdo, $goodData){
+        $errorNums;
+        if (empty($goodData['userId'])){
+            $errorNums = "006";
+        }
+        if(empty($goodData['whisperNo'])){
+            $errorNums = "008";
+        }
+    }
+
     function getUserInfo($pdo, $userId) {
         $getUserSql = "SELECT userId, userName, profile, iconPath FROM user WHERE userId = :userId";
         $getUserStmt = $pdo->prepare($getUserSql);
