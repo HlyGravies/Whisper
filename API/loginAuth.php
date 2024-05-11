@@ -2,7 +2,9 @@
 include ("mysqlConnect.php");
 include("mysqlClose.php");
 include("errorMsgs.php");
-include("function.php");
+// include("function.php");
+include("database/database.php");
+include("validation/validation.php");
 $pdo = connect_db();
 
 $response = [
@@ -21,7 +23,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $response["result"] = "success";
             $response["userData"] = getUserInfo($pdo, $postData["userId"]);
         }else{
-            $response = setError($response, "003");
+            $errorNums[] = "003";
+            $response = setError($response, $errorNums);
         }
     }else{
         $response = setError($response, $errorNums);

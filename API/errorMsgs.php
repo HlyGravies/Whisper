@@ -36,7 +36,6 @@ function setError($response, $errorNums){
   foreach ($errorNums as $errorNum) {
     $errorMap[$errorNum] = $msgList[$errorNum];
   }
-
   $response['errorDetails'] = $errorMap;
 
   
