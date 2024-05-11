@@ -27,8 +27,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }else{
             $errorNums[] = "003";
             $response = setError($response, $errorNums);
-        } else {
-            $response = setError($response, "003");
         }
     } else {
         $response = setError($response, $errorNums);
