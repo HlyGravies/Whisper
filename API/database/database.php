@@ -120,7 +120,12 @@
                 whisper.postDate DESC";
 
         $getAllWhisperstmt = $pdo -> prepare($getAllWhisperSql);
-        $getAllWhisperstmt -> bindParam(':userId', $whisperData['userId'])
+        $getAllWhisperstmt -> bindParam(':userId', $postData['userId']);
+        $getAllWhisperstmt -> execute();
+        $results = $getAllWhisperstmt->fetchAll(PDO::FETCH_ASSOC);
+
+        forea
+
 
         foreach ($followUserIds as $key => $value) {
             $getTimelineInfoStmt->bindValue($key + 1, $value);
