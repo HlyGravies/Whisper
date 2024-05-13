@@ -129,4 +129,22 @@
         }   
     }
 
+    function validateGoodCtl($pdo, $goodData){
+        $errorNums;
+        if (empty($goodData['userId'])){
+            $errorNums = "006";
+        }
+        if(empty($goodData['whisperNo'])){
+            $errorNums = "008";
+        }
+        if(!isset($goodData['goodFlg'])){
+            $errorNums = "014";
+        }
+        if(!empty($errorNums)){
+            return $errorNums;
+        }else{
+            return null;
+        }   
+    }
+
 ?>
