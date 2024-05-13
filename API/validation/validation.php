@@ -13,7 +13,6 @@
         }
     }
 
-
     function validateUserData($pdo, $userData){
         $errorNums;
         if (isUserIdExist($pdo, $userData['userId'])) {

@@ -2,9 +2,9 @@
 //Quan
 require_once 'mysqlConnect.php';
 require_once 'errorMsgs.php';
-// include("function.php");
 include("database/database.php");
 include("validation/validation.php");
+
 $pdo = connect_db();
 
 $response = [
@@ -16,13 +16,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     $errorNums = validateWhisperData($pdo,$whisperData);
     if ($errorNums === null){
-        $sql = "INSERT INTO whisper (userId, postDate, content, imagePath) VALUES (:userId, :postDate, :content, :imagePath)";
+        $sql = "INSERT INTO whisper (userId, content, ) VALUES (:userId, :content)";
         try {
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(':userId', $whisperData['userId']);
-            $stmt->bindParam(':postDate', $whisperData['postDate']);
+            // $stmt->bindParam(':postDate', $whisperData['postDate']);
             $stmt->bindParam(':content', $whisperData['content']);
-            $stmt->bindParam(':imagePath', $whisperData['imagePath']);
+            // $stmt->bindParam(':imagePath', $whisperData['imagePath']);
             $stmt->execute();
         } catch (PDOException $e) {
             echo "Lỗi: " . $e->getMessage();
