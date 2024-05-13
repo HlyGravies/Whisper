@@ -137,6 +137,14 @@
         if(empty($goodData['whisperNo'])){
             $errorNums = "008";
         }
+        if(!isset($goodData['goodFlg'])){
+            $errorNums = "014";
+        }
+        if(!empty($errorNums)){
+            return $errorNums;
+        }else{
+            return null;
+        }   
     }
 
     function getUserInfo($pdo, $userId) {
