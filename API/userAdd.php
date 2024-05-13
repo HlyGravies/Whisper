@@ -2,10 +2,10 @@
 //Quan
 require_once 'mysqlConnect.php';
 require_once 'errorMsgs.php';
-require_once 'function.php';
+// include("function.php");
+include("database/database.php");
+include("validation/validation.php");
 $pdo = connect_db();
-
-
 
 $response = [
     "result"  => "success",

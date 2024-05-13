@@ -2,10 +2,10 @@
 //Quan
 require_once 'mysqlConnect.php';
 require_once 'errorMsgs.php';
-require_once 'function.php';
+include("database/database.php");
+include("validation/validation.php");
+
 $pdo = connect_db();
-
-
 
 $response = [
     "result"  => "success",
@@ -18,11 +18,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($errorNums === null){
         $sql = "INSERT INTO whisper (userId, postDate, content, imagePath) VALUES (:userId, :postDate, :content, :imagePath)";
         try {
+            $currentDate = date("Y-m-d H:i:s");
+
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(':userId', $whisperData['userId']);
-            $stmt->bindParam(':postDate', $whisperData['postDate']);
+            $stmt->bindValue(':postDate', $currentDate);
             $stmt->bindParam(':content', $whisperData['content']);
-            $stmt->bindParam(':imagePath', $whisperData['imagePath']);
+            $stmt->bindValue(':imagePath', "?");
             $stmt->execute();
         } catch (PDOException $e) {
             echo "Lỗi: " . $e->getMessage();
