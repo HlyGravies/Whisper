@@ -97,6 +97,7 @@
 
 
     function getUserWhisperInfo($pdo, $postData){
+        //Get WhisperList
         $getAllWhisperSql = 
             "SELECT 
                 whisper.whisperNo, 
@@ -122,21 +123,42 @@
         $getAllWhisperstmt = $pdo -> prepare($getAllWhisperSql);
         $getAllWhisperstmt -> bindParam(':userId', $postData['userId']);
         $getAllWhisperstmt -> execute();
-        $results = $getAllWhisperstmt->fetchAll(PDO::FETCH_ASSOC);
+        $whisperList = $getAllWhisperstmt->fetchAll(PDO::FETCH_ASSOC);
 
-        forea
-
-
-        foreach ($followUserIds as $key => $value) {
-            $getTimelineInfoStmt->bindValue($key + 1, $value);
+        foreach ($whisperList as &$whisper) {
+            $whisper['goodFlg'] = getGoodFlag($pdo, $postData['loginUserId'], $whisper['whisperNo']);
         }
-        $getTimelineInfoStmt->bindValue(count($followUserIds) + 1, $userId);
-        $getTimelineInfoStmt->execute();
-        $whisperList = $getTimelineInfoStmt->fetchAll(PDO::FETCH_ASSOC);
-        foreach ($whisperList as $key => $whisper) {
-            $whisperList[$key]['goodFlg'] = getGoodFlag($pdo, $loginUserId, $whisper['whisperNo']);
-        }        
-        return $whisperList;
+        unset($whisper);
+
+        //Get いいねList
+        $sql = "SELECT whisperNo FROM whisper WHERE userId = :userId";
+        $stmt = $pdo -> prepare($sql);
+        $stmt -> bindParam(':userId', $postData['userId']);
+        $getAllLikedWhisperSql = "SELECT 
+                whisper.whisperNo, 
+                whisper.userId, 
+                user.userName, 
+                whisper.postDate, 
+                whisper.content
+            FROM 
+                whisper
+            INNER JOIN 
+                user ON whisper.userId = user.userId
+            WHERE 
+                goodInfo.userId IN ()
+            GROUP BY
+                whisper.whisperNo, 
+                whisper.userId, 
+                user.userName, 
+                whisper.postDate, 
+                whisper.content
+            ORDER BY
+                whisper.postDate DESC";
+        $getAllLikedWhisperStmt = $pdo -> prepare($getAllLikedWhisperSql);
+        $getAllLikedWhisperStmt -> bindParam(':userId', $postData['userId']);
+        $getAllLikedWhisperStmt -> execute();
+        $getAllLikedWhisperList = $getAllLikedWhisperStmt -> fetchAll(PDO::FETCH_ASSOC);;
+        return $getAllLikedWhisperList;
     }
 
 
