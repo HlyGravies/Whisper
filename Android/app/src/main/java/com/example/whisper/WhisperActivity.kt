@@ -45,57 +45,62 @@ class WhisperActivity : AppCompatActivity() {
                 Toast.makeText(this, "Input field cannot be empty", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-
-            val client = OkHttpClient()
-            val mediaType: MediaType = "application/json; charset=utf-8".toMediaType()
-            val whisperText = wisperEdit.text.toString() // just sapmle
-            val requestBody = JSONObject().apply {
-                put("content", whisperText)
-            }.toString().toRequestBody(mediaType)
-            val request = Request.Builder()
-                .url(myApp.apiUrl+ "whisperAdd.php")
-                .post(requestBody)
-                .build()
-            client.newCall(request!!).enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    this@WhisperActivity.runOnUiThread {
-                        Toast.makeText(
-                            this@WhisperActivity,
-                            "Error :${e.message}",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-
-                override fun onResponse(call: Call, response: Response) {
-                    val responseBody = response.body?.string()
-                    try {
-                        val jsonResponse = JSONObject(responseBody)
-
-                        if (jsonResponse.has("error")) {
-                            val errorMessage = jsonResponse.getString("error")
-                            this@WhisperActivity.runOnUiThread {
-                                Toast.makeText(
-                                    this@WhisperActivity,
-                                    errorMessage,
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                            return
+            try {
+                val client = OkHttpClient()
+                val mediaType: MediaType = "application/json; charset=utf-8".toMediaType()
+                val requestBody = JSONObject().apply {
+                    put("userId", myApp.loginUserId)
+                    put("content", wisperEdit.text.toString())
+                }.toString().toRequestBody(mediaType)
+                val request = Request.Builder()
+                    .url(myApp.apiUrl+ "whisperAdd.php")
+                    .post(requestBody)
+                    .build()
+                client.newCall(request!!).enqueue(object : Callback {
+                    override fun onFailure(call: Call, e: IOException) {
+                        this@WhisperActivity.runOnUiThread {
+                            Toast.makeText(
+                                this@WhisperActivity,
+                                "Error :${e.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
-                        val intent = Intent(this@WhisperActivity, UserInfoActivity::class.java)
-                        intent.putExtra("userId", myApp.loginUserId)
-                        startActivity(intent)
-                        finish()
-
-
-                    } catch (e: Exception) {
-                        Toast.makeText(this@WhisperActivity, "${e.message}", Toast.LENGTH_SHORT)
-                            .show()
                     }
-                }
 
-            })
+                    override fun onResponse(call: Call, response: Response) {
+                        val responseBody = response.body?.string()
+                        try {
+                            val jsonResponse = JSONObject(responseBody)
+
+                            if (jsonResponse.has("error")) {
+                                val errorMessage = jsonResponse.getString("error")
+                                this@WhisperActivity.runOnUiThread {
+                                    Toast.makeText(
+                                        this@WhisperActivity,
+                                        errorMessage,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                                return
+                            }
+                            val intent = Intent(this@WhisperActivity, UserInfoActivity::class.java)
+                            intent.putExtra("userId", myApp.loginUserId)
+                            startActivity(intent)
+                            finish()
+
+
+                        } catch (e: Exception) {
+                            Toast.makeText(this@WhisperActivity, "${e.message}", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    }
+
+                })
+            } catch (e: Exception) {
+                Log.d(TAG, "APItest: ${e.message}")
+            }
+
+
 
         }
 
