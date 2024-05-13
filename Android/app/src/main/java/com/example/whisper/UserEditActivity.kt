@@ -100,7 +100,8 @@ class UserEditActivity : AppCompatActivity() {
                 val userName = userNameEdit.text.toString()
                 val profile = profileEdit.text.toString()
                 val requestBody = JSONObject().apply {
-                    put("username", userName)
+                    put("userId", myApp.loginUserId)
+                    put("userName", userName)
                     put("profile", profile)
                 }.toString().toRequestBody(mediaType)
                 val request = Request.Builder()
