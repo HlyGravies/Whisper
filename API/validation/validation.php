@@ -56,11 +56,11 @@
         } elseif (strlen($userUpdateData['userName']) > 20) {
             $errorNums[] = "ERR_USERNAME_TOOLONG";
         }
-        if (empty($userUpdateData['password'])) {
-            $errorNums[] = "007";
-        } elseif (strlen($userUpdateData['password']) > 64) {
-            $errorNums[] = "ERR_PASSWORD_TOOLONG";
-        }
+        // if (empty($userUpdateData['password'])) {
+        //     $errorNums[] = "007";
+        // } elseif (strlen($userUpdateData['password']) > 64) {
+        //     $errorNums[] = "ERR_PASSWORD_TOOLONG";
+        // }
         if(mb_strlen($userUpdateData['profile'], 'UTF-8') > 200){
             $errorNums[] = "ERR_PROFILE_TOOLONG";
         }

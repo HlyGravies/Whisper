@@ -95,11 +95,51 @@
         }
     }
 
+
+    function getUserWhisperInfo($pdo, $postData){
+        $getAllWhisperSql = 
+            "SELECT 
+                whisper.whisperNo, 
+                whisper.userId, 
+                user.userName, 
+                whisper.postDate, 
+                whisper.content
+            FROM 
+                whisper
+            INNER JOIN 
+                user ON whisper.userId = user.userId
+            WHERE 
+                whisper.userId = :userId
+            GROUP BY
+                whisper.whisperNo, 
+                whisper.userId, 
+                user.userName, 
+                whisper.postDate, 
+                whisper.content
+            ORDER BY
+                whisper.postDate DESC";
+
+        $getAllWhisperstmt = $pdo -> prepare($getAllWhisperSql);
+        $getAllWhisperstmt -> bindParam(':userId', $whisperData['userId'])
+
+        foreach ($followUserIds as $key => $value) {
+            $getTimelineInfoStmt->bindValue($key + 1, $value);
+        }
+        $getTimelineInfoStmt->bindValue(count($followUserIds) + 1, $userId);
+        $getTimelineInfoStmt->execute();
+        $whisperList = $getTimelineInfoStmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($whisperList as $key => $whisper) {
+            $whisperList[$key]['goodFlg'] = getGoodFlag($pdo, $loginUserId, $whisper['whisperNo']);
+        }        
+        return $whisperList;
+    }
+
+
     function userAuthentication($pdo, $loginData){
         $getUserSql = "SELECT password FROM user WHERE userId = :userId";
         $getUserStmt = $pdo->prepare($getUserSql);
         $getUserStmt->bindParam(':userId', $loginData["userId"]);
-        $getUserStmt->execute(); // Thực thi truy vấn
+        $getUserStmt->execute(); 
         $password = $getUserStmt->fetchColumn(); 
         if($loginData["password"] === $password){
             return true;
