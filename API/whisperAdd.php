@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     $errorNums = validateWhisperData($pdo,$whisperData);
     if ($errorNums === null){
-        $sql = "INSERT INTO whisper (userId, content, ) VALUES (:userId, :content)";
+        $sql = "INSERT INTO whisper (userId, content) VALUES (:userId, :content)";
         try {
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(':userId', $whisperData['userId']);
