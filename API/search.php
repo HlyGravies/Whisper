@@ -2,42 +2,44 @@
 //Quan
 require_once 'mysqlConnect.php';
 require_once 'errorMsgs.php';
-require_once 'function.php';
+// include("function.php");
+include("database/database.php");
+include("validation/validation.php");
 $pdo = connect_db();
 
 
 
 $response = [
-    "result"  => "success",
+    "result" => "success",
     "errorDetails" => null
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $postData = json_decode(file_get_contents('php://input'), true);
-    
+
     define("USER_SEARCH", "1");
     define("WHISPER_SEARCH", "2");
 
     switch ($postData['section']) {
         case USER_SEARCH:
-                $userInfo = getUserInfo($pdo, $postData['string']);
-                if ($userInfo !== false) {
-                    $response['userList'] = $userInfo;
-                } else {
-                    $response = setError($response, "004");
-                }
+            $userInfo = getUserInfo($pdo, $postData['string']);
+            if ($userInfo !== false) {
+                $response['userList'] = $userInfo;
+            } else {
+                $response = setError($response, "004");
+            }
             break;
         case WHISPER_SEARCH:
-                $whisperList = getWhisperInfo($pdo, $postData['string']);
-                if($whisperList != false){
-                    $response['whisperList'] = $whisperList;
-                }else{
-                    $response = setError($response, "004");
-                }
+            $whisperList = getWhisperInfo($pdo, $postData['string']);
+            if ($whisperList != false) {
+                $response['whisperList'] = $whisperList;
+            } else {
+                $response = setError($response, "004");
+            }
             break;
         default:
             $response = setError($response, "004");
-        break;   
+            break;
     }
 }
 
