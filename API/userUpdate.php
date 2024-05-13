@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($errorNums === null){
         $sql = "UPDATE user
             SET userName = :userName,
-                password = :password,
+                -- password = :password,
                 profile = :profile
             WHERE userId = :userId;
             ";
@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(':userId', $userData['userId']);
             $stmt->bindParam(':userName', $userData['userName']);
-            $stmt->bindParam(':password', $userData['password']);
+            // $stmt->bindParam(':password', $userData['password']);
             $stmt->bindParam(':profile', $userData['profile']);
             $stmt->execute();
             $userData = getUserInfo($pdo, $userData['userId']);;

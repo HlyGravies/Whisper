@@ -12,9 +12,10 @@ $response = [
     "errorDetails" => null
 ];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $whisperData = json_decode(file_get_contents('php://input'), true); 
+    $postData = json_decode(file_get_contents('php://input'), true); 
     
-    $errorNums = validateWhisperData($pdo,$whisperData);
+    
+    $errorNums;
     if ($errorNums === null){
         $sql = "INSERT INTO whisper (userId, postDate, content, imagePath) VALUES (:userId, :postDate, :content, :imagePath)";
         try {
