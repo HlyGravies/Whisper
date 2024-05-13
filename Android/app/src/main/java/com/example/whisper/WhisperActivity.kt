@@ -50,10 +50,10 @@ class WhisperActivity : AppCompatActivity() {
             val mediaType: MediaType = "application/json; charset=utf-8".toMediaType()
             val whisperText = wisperEdit.text.toString() // just sapmle
             val requestBody = JSONObject().apply {
-                put("whisperText", whisperText)
+                put("content", whisperText)
             }.toString().toRequestBody(mediaType)
             val request = Request.Builder()
-                .url(myApp.apiUrl)
+                .url(myApp.apiUrl+ "whisperAdd.php")
                 .post(requestBody)
                 .build()
             client.newCall(request!!).enqueue(object : Callback {
