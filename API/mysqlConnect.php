@@ -2,7 +2,7 @@
 <?php
 //Quan
 function connect_db() {
-    $host = "click.ecc.ac.jp"; // Đổi thành địa chỉ của máy chủ đám mây
+    $host = "localhost"; // Đổi thành địa chỉ của máy chủ đám mây
     $database = "whisper24_a"; // Tên cơ sở dữ liệu trên máy chủ đám mây
     $username = "whisper24_a"; // Tên người dùng cơ sở dữ liệu
     $password = "D8bJnWSX"; // Mật khẩu cơ sở dữ liệu
