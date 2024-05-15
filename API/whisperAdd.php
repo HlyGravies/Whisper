@@ -1,5 +1,7 @@
+<!-- 
+    製作者：QUAN 
+-->
 <?php
-//Quan
 require_once 'mysqlConnect.php';
 require_once 'errorMsgs.php';
 include("database/database.php");
@@ -19,7 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $sql = "INSERT INTO whisper (userId, postDate, content, imagePath) VALUES (:userId, :postDate, :content, :imagePath)";
         try {
             $currentDate = date("Y-m-d H:i:s");
-
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(':userId', $whisperData['userId']);
             $stmt->bindValue(':postDate', $currentDate);

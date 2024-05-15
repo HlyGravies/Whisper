@@ -1,5 +1,7 @@
+<!-- 
+    製作者：QUAN 
+-->
 <?php
-//Quan
 require_once 'mysqlConnect.php';
 require_once 'errorMsgs.php';
 include("database/database.php");

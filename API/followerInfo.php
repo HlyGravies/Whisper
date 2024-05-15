@@ -1,0 +1,36 @@
+<!-- 
+    製作者：QUAN 
+-->
+<?php
+require_once 'mysqlConnect.php';
+require_once 'errorMsgs.php';
+include("database/database.php");
+include("validation/validation.php");
+$pdo = connect_db();
+
+$response = [
+    "result"  => "success",
+    "errorDetails" => null
+];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $userId = json_decode(file_get_contents('php://input'), true)['userId'];
+    
+    if ( isUserIdExist($pdo, $userId)!=false && checkUserId($pdo, $userId) == null){
+        try {
+            $response['data'] = getFollowerInfo($pdo, $userId);
+        } catch (PDOException $e) {
+            echo "Lỗi: " . $e->getMessage();
+        }
+    } else {
+        $errorNums = ["006"];
+        $response = setError($response, $errorNums );
+    }
+}
+
+header('Content-Type: application/json');
+echo json_encode($response, JSON_UNESCAPED_UNICODE);
+
+require_once 'mysqlClose.php';
+disconnect_db($pdo);
+?>

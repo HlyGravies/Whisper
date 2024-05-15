@@ -1,3 +1,6 @@
+<!-- 
+    製作者：QUAN 
+-->
 <?php
     function checkUserId($pdo, $userId){
         $errorNums;

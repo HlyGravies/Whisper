@@ -1,8 +1,10 @@
+<!-- 
+    製作者：QUAN 
+-->
 <?php
 include ("mysqlConnect.php");
 include("mysqlClose.php");
 include("errorMsgs.php");
-// include("function.php");
 include("database/database.php");
 include("validation/validation.php");
 $pdo = connect_db();

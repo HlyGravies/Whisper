@@ -1,13 +1,12 @@
+<!-- 
+    製作者：QUAN 
+-->
 <?php
-//Quan
 require_once 'mysqlConnect.php';
 require_once 'errorMsgs.php';
-// include("function.php");
 include("database/database.php");
 include("validation/validation.php");
 $pdo = connect_db();
-
-
 
 $response = [
     "result" => "success",
