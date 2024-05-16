@@ -9,12 +9,11 @@ function connect_db() {
     // $username = "root";
     // $password = "root";
 
-    $host = "localhost"; // Đổi thành địa chỉ của máy chủ đám mây
-    $database = "whisper24_a"; // Tên cơ sở dữ liệu trên máy chủ đám mây
-    $username = "whisper24_a"; // Tên người dùng cơ sở dữ liệu
-    $password = "D8bJnWSX"; // Mật khẩu cơ sở dữ liệu
+    $host = "localhost"; 
+    $database = "whisper24_a";
+    $username = "whisper24_a";
+    $password = "D8bJnWSX";
 
-    // Tạo chuỗi kết nối DSN
     $dsn = "mysql:host={$host};dbname={$database};charset=utf8mb4";
     $options = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -23,11 +22,9 @@ function connect_db() {
     ];
 
     try {
-        // Thực hiện kết nối PDO
         $pdo = new PDO($dsn, $username, $password, $options);
         return $pdo;
     } catch (PDOException $e) {
-        // Xử lý ngoại lệ nếu có lỗi xảy ra
         throw new PDOException($e->getMessage(), (int)$e->getCode());
     }
 }
