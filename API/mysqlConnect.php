@@ -1,7 +1,8 @@
-<!-- 
-    製作者：QUAN 
--->
 <?php
+/*
+    製作者：QUAN 
+*/
+
 function connect_db() {
     // $host = "localhost";
     // $database = "2024shisukai";
