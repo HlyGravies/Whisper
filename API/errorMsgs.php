@@ -33,6 +33,13 @@ function setError($response, $errorNums)
   global $msgList;
   $response["result"] = "error";
   $errorMap = [];
+
+  // Kiểm tra nếu $errorNums không phải là mảng hoặc đối tượng
+  if (!is_array($errorNums)) {
+    // Nếu không phải, tạo một mảng mới chỉ chứa phần tử $errorNums
+    $errorNums = [$errorNums];
+  }
+  
   foreach ($errorNums as $errorNum) {
     $errorMap[$errorNum] = $msgList[$errorNum];
   }
