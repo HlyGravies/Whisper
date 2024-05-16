@@ -1,7 +1,7 @@
-<!-- 
-    製作者：QUAN 
--->
 <?php
+    /* 
+        製作者：QUAN 
+    */
 include ("mysqlConnect.php");
 include("mysqlClose.php");
 include("errorMsgs.php");
