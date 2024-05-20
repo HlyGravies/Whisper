@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.whisper.MyApplication.overMenu
+
 import com.example.whisper.adapter.GoodListAdapter
 import com.example.whisper.adapter.UserListAdapter
 import okhttp3.Call
@@ -35,12 +36,7 @@ class SearchActivity : AppCompatActivity() {
         val followerCnt: Int
     )
 
-    data class GoodRowData(
-        val userImage: String,
-        val userName: String,
-        val whisperText: String,
-        val goodCnt: Int
-    )
+
     private lateinit var searchEdit: EditText
     private lateinit var searchButton: Button
     private lateinit var searchRecycle: RecyclerView
@@ -49,6 +45,8 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var whisperRadio: RadioButton
 
     private lateinit var overMenu: overMenu
+    private lateinit var listGood: MutableList<GoodListAdapter.GoodRowData>
+    private lateinit var listUser: MutableList<UserRowData>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,6 +60,9 @@ class SearchActivity : AppCompatActivity() {
         radioGroup = findViewById(R.id.radioGroup)
         userRadio = findViewById(R.id.userRadio)
         whisperRadio = findViewById(R.id.whisperRadio)
+
+        listGood = mutableListOf()
+        listUser = mutableListOf()
 
         searchButton.setOnClickListener {
             val query = searchEdit.text.toString()
@@ -116,15 +117,23 @@ class SearchActivity : AppCompatActivity() {
     }
     private fun updateUI(json: JSONObject) {
         val data = json.getJSONArray("data")
-        val listUser = mutableListOf<UserRowData>()
-        val listGood = mutableListOf<GoodRowData>()
+        listUser.clear()
+        listGood.clear()
 
         for (i in 0 until data.length()) {
             val item = data.getJSONObject(i)
             if (item.getString("type") == "user") {
                 listUser.add(UserRowData(item.getString("userImage"), item.getString("userName"), item.getInt("followCnt"), item.getInt("followerCnt")))
             } else if (item.getString("type") == "whisper") {
-                listGood.add(GoodRowData(item.getString("userImage"), item.getString("userName"), item.getString("whisperText"), item.getInt("goodCnt")))
+                listGood.add(
+                    GoodListAdapter.GoodRowData(
+                        item.getString("userId"),
+                        item.getString("userImage"),
+                        item.getString("userName"),
+                        item.getString("whisperText"),
+                        item.getInt("goodCnt")
+                    )
+                )
             }
         }
 
@@ -133,7 +142,7 @@ class SearchActivity : AppCompatActivity() {
             if (userRadio.isChecked) {
                 searchRecycle.adapter = UserListAdapter(listUser)
             } else if (whisperRadio.isChecked) {
-                searchRecycle.adapter = GoodListAdapter(listGood)
+                searchRecycle.adapter = GoodListAdapter(listGood,this)
             }
         }
     }

@@ -24,22 +24,25 @@ $msgList = array(
   "USERID_ALREADY_EXISTS"     => "このUSERIDは既に使われています",
   "ERR_EMPTY_FOLLOWUSERID"    => "フォロユーザIDが入力されていません",
   "ERR_FOLLOWUSERID_TOOLONG"  => "FOLLOWUSERIDを30文字以内で入力してください",
-
+  "ERR_USERID_NOT_FOUND"                => "USERIDが見つかりません",
   // "ERR_ICONPATH_TOOLONG" => "検索区分が不正です",
 );
 
-
-function setError($response, $errorNums)
-{
+function setError($response, $errorNums){
   global $msgList;
   $response["result"] = "error";
   $errorMap = [];
+
+  // Kiểm tra nếu $errorNums không phải là mảng hoặc đối tượng
+  if (!is_array($errorNums)) {
+    // Nếu không phải, tạo một mảng mới chỉ chứa phần tử $errorNums
+    $errorNums = [$errorNums];
+  }
+  
   foreach ($errorNums as $errorNum) {
     $errorMap[$errorNum] = $msgList[$errorNum];
   }
   $response['errorDetails'] = $errorMap;
-
-
   return $response;
 }
 

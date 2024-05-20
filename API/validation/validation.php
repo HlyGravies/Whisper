@@ -1,4 +1,8 @@
+
 <?php
+     /* 
+        製作者：QUAN 
+    */
     function checkUserId($pdo, $userId){
         $errorNums;
         if (empty($userId)) {

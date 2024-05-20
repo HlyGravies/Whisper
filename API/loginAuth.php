@@ -1,8 +1,11 @@
 <?php
+/*
+    製作者：QUAN 
+*/
+
 include ("mysqlConnect.php");
 include("mysqlClose.php");
 include("errorMsgs.php");
-// include("function.php");
 include("database/database.php");
 include("validation/validation.php");
 $pdo = connect_db();
@@ -15,9 +18,7 @@ $response = [
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $postData = json_decode(file_get_contents('php://input'), true);
-
     $errorNums = validateLoginData($postData);
-
     if ($errorNums === null) {
         if (isUserIdExist($pdo, $postData['userId']) && userAuthentication($pdo, $postData)) {
             $response["result"] = "success";
@@ -31,11 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     header('Content-Type: application/json');
     echo json_encode($response, JSON_UNESCAPED_UNICODE);
-
     require_once 'mysqlClose.php';
-
-
     disconnect_db($pdo);
-
 }
 ?>

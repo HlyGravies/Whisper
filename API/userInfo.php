@@ -1,8 +1,10 @@
 <?php
-//Quan
+/*
+    製作者：QUAN 
+*/
+
 require_once 'mysqlConnect.php';
 require_once 'errorMsgs.php';
-// include("function.php");
 include("database/database.php");
 include("validation/validation.php");
 $pdo = connect_db();
@@ -19,7 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if(isUserIdExist($pdo, $userId) == false){
         $errorNums = "006";
     }
-    
     if ($errorNums === null){
         try {
             $userData = getUserInfo($pdo, $userId);
