@@ -9,17 +9,17 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.whisper.R
+import com.example.whisper.SearchActivity
 import com.example.whisper.UserInfoActivity
 
-data class userData(
-    val userId : String,
-    val userName : String,
-    val followCnt : String,
-    val followerCnt : String,
+class UserListAdapter(private val dataset: MutableList<SearchActivity.UserRowData>) : RecyclerView.Adapter<UserListAdapter.ViewHolder>(){
+    data class userData(
+        val userId : String,
+        val userName : String,
+        val followCnt : Int,
+        val followerCnt : Int,
     )
-class UserListAdapter(private val dataset: MutableList<userData>) : RecyclerView.Adapter<UserListAdapter.ViewHolder>(){
-
-    //private var userList: List<userData> = emptyList()
+    private var userList: List<userData> = emptyList()
     inner class ViewHolder(item :View) : RecyclerView.ViewHolder(item){
         val userNameText : TextView = item.findViewById(R.id.userNameText)
         val followCnt : TextView = item.findViewById(R.id.followCntText)
@@ -32,7 +32,7 @@ class UserListAdapter(private val dataset: MutableList<userData>) : RecyclerView
                 if(position != RecyclerView.NO_POSITION){
                     val intent = Intent(context, UserInfoActivity::class.java)
                     // 対象行のユーザIDを取得してインテントにセット
-                    val userId = dataset[position].userId
+                    val userId = dataset[position].userName
                     intent.putExtra("userId",userId)
                     context.startActivity(intent)
                 }
@@ -49,8 +49,8 @@ class UserListAdapter(private val dataset: MutableList<userData>) : RecyclerView
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.userNameText.text = dataset[position].userName
-        holder.followCnt.text = dataset[position].followCnt
-        holder.followerCnt.text = dataset[position].followerCnt
+        holder.followCnt.text = dataset[position].followCnt.toString()
+        holder.followerCnt.text = dataset[position].followerCnt.toString()
 
 
     }
