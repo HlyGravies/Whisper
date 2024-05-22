@@ -182,7 +182,7 @@ function getUserWhisperInfo($pdo, $postData){
     $userWhipserInfo['whisperList'] = $whisperList;
     $userWhipserInfo['allLikedWhisperList'] = $AllLikedWhisperList;
 
-    return $AllLikedWhisperList;
+    return $userWhipserInfo;
 }
 
 
