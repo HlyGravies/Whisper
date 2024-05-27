@@ -25,8 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bindParam(':userId', $userData['userId']);
             $stmt->bindParam(':userName', $userData['userName']);
             $stmt->bindParam(':password', $userData['password']);
-            $stmt->bindParam(':profile', $userData['profile']);
-            $stmt->bindParam(':iconPath', $userData['iconPath']);
+            // $stmt->bindParam(':profile', $userData['profile']);
+            // $stmt->bindParam(':iconPath', $userData['iconPath']);
             $stmt->execute();
             $userData = getUserInfo($pdo, $userData['userId']);;
             $response['result'] = "success";
