@@ -3,16 +3,19 @@ package com.example.whisper
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.whisper.MyApplication.MyApplication
-import com.example.whisper.adapter.GoodListAdapter
-//import com.example.whisper.adapter.WhisperListAdapter
+import com.example.whisper.MyApplication.overMenu
+import com.example.whisper.model.Whisper
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -31,12 +34,12 @@ class UserInfoActivity : AppCompatActivity() {
     private lateinit var radioGroup: RadioGroup
     private var userId: String? = null
     private val myApp: MyApplication by lazy { application as MyApplication }
+    private lateinit var overMenu: overMenu
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_info)
 
-        // 1-1. Khai báo các biến
         userNameTx = findViewById(R.id.userNameText)
         userProfileTx = findViewById(R.id.profileText)
         followCountTx = findViewById(R.id.followCntText)
@@ -44,20 +47,23 @@ class UserInfoActivity : AppCompatActivity() {
         followBtn = findViewById(R.id.followButton)
         userRecycle = findViewById(R.id.userRecycle)
         radioGroup = findViewById(R.id.radioGroup)
+        overMenu = overMenu(this)
 
-        // 1-2. Lấy UserId từ Intent
         userId = intent.getStringExtra("userId")
+        Log.d("checkUserInfoActivity", "userId: $userId")
 
-        // 1-3. Gọi API để lấy thông tin người dùng
         getUserInfoApiCall()
+        getFollowInfoApiCall()
 
-        // 1-4. Tạo sự kiện lắng nghe cho radioGroup
-        radioGroup.setOnCheckedChangeListener { _, _ ->
-            // 1-4-1. Gọi lại API để lấy thông tin người dùng và cập nhật trạng thái
-            getUserInfoApiCall()
+
+        radioGroup.setOnCheckedChangeListener { _, checkedId ->
+            if (checkedId == R.id.whisperRadio) {
+                getUserWhispersApiCall()
+            }else if (checkedId == R.id.goodInfoRadio) {
+                getUserGoodWhispersApiCall()
+            }
         }
 
-        // 1-5. Tạo sự kiện lắng nghe cho followCountText
         followCountTx.setOnClickListener {
             val intent = Intent(this, FollowListActivity::class.java)
             intent.putExtra("userId", userId)
@@ -65,7 +71,6 @@ class UserInfoActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // 1-6. Tạo sự kiện lắng nghe cho followerCountText
         followerCountTx.setOnClickListener {
             val intent = Intent(this, FollowListActivity::class.java)
             intent.putExtra("userId", userId)
@@ -73,10 +78,75 @@ class UserInfoActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // 1-7. Tạo sự kiện lắng nghe cho followButton
         followBtn.setOnClickListener {
-            followManageApiCall()
+            val followFlg = followBtn.text != "Following"
+            followManageApiCall(userId!!, followFlg)
         }
+    }
+
+    private fun getUserGoodWhispersApiCall() {
+        val client = OkHttpClient()
+        val mediaType: MediaType = "application/json; charset=utf-8".toMediaType()
+        val requestBody = JSONObject().apply {
+            put("userId", userId)
+            put("loginUserId", myApp.loginUserId)
+        }.toString().toRequestBody(mediaType)
+        val request = Request.Builder()
+            .url("${myApp.apiUrl}userWhisperInfo.php")
+            .post(requestBody)
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                runOnUiThread {
+                    Toast.makeText(myApp, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val responseBody = response.body?.string()
+                Log.d("API Response", responseBody ?: "No response body")
+
+                try {
+                    val jsonResponse = JSONObject(responseBody)
+                    val list = mutableListOf<Whisper>()
+                    val whispers = jsonResponse.getJSONObject("data").getJSONArray("allLikedWhisperList")
+                    for (i in 0 until whispers.length()) {
+                        val whisper = whispers.getJSONObject(i)
+                        if (whisper.getBoolean("goodFlg")) { // Only add the whisper if "goodFlg" is true
+                            list.add(
+                                Whisper(
+                                    whisper.getInt("whisperNo"),
+                                    whisper.getString("userId"),
+                                    whisper.getString("userName"),
+                                    whisper.getString("postDate"),
+                                    whisper.getString("content"),
+                                    whisper.getBoolean("goodFlg")
+                                )
+                            )
+                        }
+                    }
+
+                    if (jsonResponse.has("error")) {
+                        runOnUiThread {
+                            Toast.makeText(myApp, jsonResponse.getString("error"), Toast.LENGTH_LONG).show()
+                        }
+                    } else {
+                        runOnUiThread {
+                            Log.d("GoodWhispers", list.toString()) // Log danh sách whispers để kiểm tra
+                            userRecycle.layoutManager = LinearLayoutManager(this@UserInfoActivity)
+                            val adapter = GoodListAdapter(this@UserInfoActivity, list, myApp.loginUserId)
+                            userRecycle.adapter = adapter
+                            adapter.notifyDataSetChanged()
+                        }
+                    }
+                } catch (e: JSONException) {
+                    runOnUiThread {
+                        Toast.makeText(myApp, "Error parsing the response", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        })
     }
 
     private fun getUserInfoApiCall() {
@@ -107,27 +177,61 @@ class UserInfoActivity : AppCompatActivity() {
                             Toast.makeText(myApp, jsonResponse.getString("error"), Toast.LENGTH_LONG).show()
                         }
                     } else {
-                        // 2-2. Xử lý dữ liệu trả về
                         runOnUiThread {
-                            // 2-2-2. Đặt dữ liệu vào các TextView
-                            userNameTx.text = jsonResponse.getString("userName")
-                            userProfileTx.text = jsonResponse.getString("userProfile")
-                            followCountTx.text = jsonResponse.getString("followCount")
-                            followerCountTx.text = jsonResponse.getString("followerCount")
-
-                            // 2-2-3. Xử lý nút follow
-                            followBtn.text = if (jsonResponse.getBoolean("isFollowed")) "フォロー中" else "フォローする"
+                            val userData = jsonResponse.getJSONObject("userData")
+                            userNameTx.text = userData.getString("userName")
+                            userProfileTx.text = userData.getString("profile")
                             followBtn.visibility = if (userId == myApp.loginUserId) View.GONE else View.VISIBLE
+                        }
+                    }
+                } catch (e: JSONException) {
+                    runOnUiThread {
+                        Toast.makeText(myApp, "Error parsing the response", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        })
+    }
+    private fun getFollowInfoApiCall() {
+        val client = OkHttpClient()
+        val mediaType: MediaType = "application/json; charset=utf-8".toMediaType()
+        val requestBody = JSONObject().apply {
+            put("userId", myApp.loginUserId)
+        }.toString().toRequestBody(mediaType)
+        val request = Request.Builder()
+            .url("${myApp.apiUrl}followerInfo.php")
+            .post(requestBody)
+            .build()
 
-                            // 2-2-4. Xử lý thông tin danh sách
-                            val whispers = jsonResponse.getJSONArray("whisper")
-                            val goodInfos = jsonResponse.getJSONArray("goodInfo")
-                            val adapter = if (radioGroup.checkedRadioButtonId == R.id.whisperRadio) {
-//                                WhisperListAdapter(whispers)
-                            } else {
-//                                GoodListAdapter(goodInfos)
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                runOnUiThread {
+                    Toast.makeText(myApp, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val responseBody = response.body?.string()
+                try {
+                    val jsonResponse = JSONObject(responseBody)
+                    if (jsonResponse.has("error")) {
+                        runOnUiThread {
+                            Toast.makeText(myApp, jsonResponse.getString("error"), Toast.LENGTH_LONG).show()
+                        }
+                    } else {
+                        val followList = jsonResponse.getJSONObject("data").getJSONArray("followList")
+                        var isFollowing = false
+                        for (i in 0 until followList.length()) {
+                            val follow = followList.getJSONObject(i)
+                            if (follow.getString("userId") == userId) {
+                                isFollowing = true
+                                break
                             }
-//                            userRecycle.adapter = adapter
+                        }
+                        runOnUiThread {
+                            followBtn.text = if (isFollowing) "Following" else "Follow"
+                            followCountTx.text = followList.length().toString()
+                            followerCountTx.text = jsonResponse.getJSONObject("data").getJSONArray("followerList").length().toString()
                         }
                     }
                 } catch (e: JSONException) {
@@ -139,7 +243,7 @@ class UserInfoActivity : AppCompatActivity() {
         })
     }
 
-    private fun followManageApiCall() {
+    private fun getUserWhispersApiCall() {
         val client = OkHttpClient()
         val mediaType: MediaType = "application/json; charset=utf-8".toMediaType()
         val requestBody = JSONObject().apply {
@@ -147,7 +251,75 @@ class UserInfoActivity : AppCompatActivity() {
             put("loginUserId", myApp.loginUserId)
         }.toString().toRequestBody(mediaType)
         val request = Request.Builder()
-            .url("${myApp.apiUrl}followManage.php")
+            .url("${myApp.apiUrl}userWhisperInfo.php")
+            .post(requestBody)
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                runOnUiThread {
+                    Toast.makeText(myApp, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val responseBody = response.body?.string()
+                //Log.d("API Response", responseBody ?: "No response body")
+
+                try {
+                    val jsonResponse = JSONObject(responseBody)
+                    val list = mutableListOf<Whisper>()
+                    val whispers = jsonResponse.getJSONObject("data").getJSONArray("whisperList")
+                    //Log.d("Whispers", whispers.toString())
+                    for (i in 0 until whispers.length()) {
+                        val whisper = whispers.getJSONObject(i)
+                        list.add(
+                            Whisper(
+                                whisper.getInt("whisperNo"),
+                                whisper.getString("userId"),
+                                whisper.getString("userName"),
+                                whisper.getString("postDate"),
+                                whisper.getString("content"),
+                                whisper.getBoolean("goodFlg")
+                            )
+                        )
+
+                    }
+
+                    if (jsonResponse.has("error")) {
+                        runOnUiThread {
+                            Toast.makeText(myApp, jsonResponse.getString("error"), Toast.LENGTH_LONG).show()
+                        }
+                    } else {
+                        runOnUiThread {
+                             // Log danh sách whispers để kiểm tra
+                            Log.d("Whispers", list.toString())
+                            userRecycle.layoutManager = LinearLayoutManager(this@UserInfoActivity)
+                            val adapter = WhisperListAdapter(this@UserInfoActivity, list,myApp.loginUserId)
+                            userRecycle.adapter = adapter
+                            adapter.notifyDataSetChanged()
+
+                        }
+                    }
+                } catch (e: JSONException) {
+                    runOnUiThread {
+                        Toast.makeText(myApp, "Error parsing the response", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        })
+    }
+
+    private fun followManageApiCall(followUserId: String, followFlg: Boolean) {
+        val client = OkHttpClient()
+        val mediaType: MediaType = "application/json; charset=utf-8".toMediaType()
+        val requestBody = JSONObject().apply {
+            put("userId", myApp.loginUserId)
+            put("followUserId", followUserId)
+            put("followFlg", followFlg)
+        }.toString().toRequestBody(mediaType)
+        val request = Request.Builder()
+            .url("${myApp.apiUrl}followCtl.php")
             .post(requestBody)
             .build()
 
@@ -160,6 +332,7 @@ class UserInfoActivity : AppCompatActivity() {
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
+                Log.d("API follow Response", responseBody ?: "No response body")
                 try {
                     val jsonResponse = JSONObject(responseBody)
                     if (jsonResponse.has("error")) {
@@ -168,11 +341,8 @@ class UserInfoActivity : AppCompatActivity() {
                         }
                     } else {
                         runOnUiThread {
-                            Toast.makeText(applicationContext, "User created successfully", Toast.LENGTH_LONG).show()
-                            val intent = Intent(this@UserInfoActivity, UserInfoActivity::class.java)
-                            intent.putExtra("userId", userId)
-                            startActivity(intent)
-                            finish()
+                            followBtn.text = if (followFlg) "Following" else "Follow"
+                            getFollowInfoApiCall() // Update follow count
                         }
                     }
                 } catch (e: JSONException) {
@@ -182,5 +352,14 @@ class UserInfoActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Gọi onCreateOptionsMenu từ overMenu
+        return overMenu.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Gọi onOptionsItemSelected từ overMenu
+        return overMenu.onOptionsItemSelected(item)
     }
 }

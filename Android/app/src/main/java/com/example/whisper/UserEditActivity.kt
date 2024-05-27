@@ -118,6 +118,7 @@ class UserEditActivity : AppCompatActivity() {
 
                     override fun onResponse(call: Call, response: Response) {
                         val responseData = response.body?.string()
+
                         val json = JSONObject(responseData)
 
                         if (json.has("error")) {
@@ -128,6 +129,7 @@ class UserEditActivity : AppCompatActivity() {
                             runOnUiThread {
                                 // Start a new activity and finish the current one
                                 val intent = Intent(this@UserEditActivity, UserInfoActivity::class.java)
+                                intent.putExtra("userId", myApp.loginUserId)
                                 startActivity(intent)
                                 finish()
                             }
