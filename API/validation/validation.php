@@ -38,9 +38,9 @@
         } elseif (strlen($userData['password']) > 64) {
             $errorNums[] = "ERR_PASSWORD_TOOLONG";
         }
-        if(mb_strlen($userData['profile'], 'UTF-8') > 200){
-            $errorNums[] = "ERR_PROFILE_TOOLONG";
-        }
+        // if(mb_strlen($userData['profile'], 'UTF-8') > 200){
+        //     $errorNums[] = "ERR_PROFILE_TOOLONG";
+        // }
         if(!empty($errorNums)){
             return $errorNums;
         }else{

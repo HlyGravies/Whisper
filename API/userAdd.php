@@ -19,7 +19,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     $errorNums = validateUserData($pdo, $userData);
     if ($errorNums === null){
-        $sql = "INSERT INTO user (userId, userName, password, profile, iconPath) VALUES (:userId, :userName, :password, :profile, :iconPath)";
+        $sql = "INSERT INTO user (userId, userName, password
+        -- , profile, iconPath
+        ) VALUES (:userId, :userName, :password
+        -- , :profile, :iconPath
+        )";
         try {
             $stmt = $pdo->prepare($sql);
             $stmt->bindParam(':userId', $userData['userId']);
