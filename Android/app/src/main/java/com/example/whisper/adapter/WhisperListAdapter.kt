@@ -34,7 +34,7 @@ class WhisperListAdapter(
 
         holder.userName.text = whisper.userName
         holder.whisperText.text = whisper.content
-//        holder.goodImage.setImageResource(if (whisper.goodFlg) R.drawable.ic_star_filled else R.drawable.ic_star_placeholder)
+        holder.goodImage.setImageResource(if (whisper.goodFlg) R.drawable.ic_star_filled else R.drawable.ic_star_placeholder)
 
         // Set click listener for userImage
         holder.userImage.setOnClickListener {
