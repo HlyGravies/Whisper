@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     switch ($postData['section']) {
         case USER_SEARCH:
-            $userInfo = getUserInfo($pdo, $postData['string']);
+            $userInfo = getUserAndFollowInfo($pdo, $postData['string']);
             if ($userInfo !== false) {
                 $response['userList'] = $userInfo;
             } else {
