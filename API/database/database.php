@@ -249,26 +249,27 @@ function getFollowerInfo($pdo, $userId)
 //         "SELECT * FROM follow WHERE userId=:userId,followerUserId=:loginUserId";
 // }
 
-// function getUserAndFollowInfo($pdo, $userId){
-//     $sql =
-//         "SELECT
-//             user.userId,
-//             user.userName,
-//             (SELECT COUNT(whisper.whisperNo) FROM whisper WHERE whisper.userId = user.userId) AS whisperCount,
-//             (SELECT COUNT(follow.followUserId) FROM follow WHERE follow.userId = user.userId) AS followCount, -- số người mình follow
-//             (SELECT COUNT(follow.userId) FROM follow WHERE follow.followUserId = user.userId) AS followerCount -- số người follow mình
-//         FROM
-//             user
-//         WHERE
-//             user.userId = :userId
-//     ";
-//     $stmt = $pdo -> prepare($sql);
-//     $stmt -> bindParam('userId',$userId);
-//     $stmt -> execute();
-//     return $stmt->fetch(PDO::FETCH_ASSOC);
-// }
+function getUserAndFollowInfo($pdo, $userId)
+{
+    $sql =
+        "SELECT
+            user.userId,
+            user.userName,
+            (SELECT COUNT(whisper.whisperNo) FROM whisper WHERE whisper.userId = user.userId) AS whisperCount,
+            (SELECT COUNT(follow.followUserId) FROM follow WHERE follow.userId = user.userId) AS followCount, -- số người mình follow
+            (SELECT COUNT(follow.userId) FROM follow WHERE follow.followUserId = user.userId) AS followerCount -- số người follow mình
+        FROM
+            user
+        WHERE
+            user.userId = :userId
+    ";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam('userId', $userId);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
 
-function getUserAndFollowInfo($pdo, $userName)
+function getUserByUserName($pdo, $userName)
 {
     $sql =
         "SELECT
@@ -289,7 +290,7 @@ function getUserAndFollowInfo($pdo, $userName)
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function getWhisperInfo($pdo, $content)
+function getWhisperByContent($pdo, $content)
 {
     $Sql =
         "SELECT
