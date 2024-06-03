@@ -1,12 +1,12 @@
 <?php
 /*
-    製作者：QUAN 
+    製作者：QUAN
 */
 
 require_once 'mysqlConnect.php';
 require_once 'errorMsgs.php';
-include("database/database.php");
-include("validation/validation.php");
+include ("database/database.php");
+include ("validation/validation.php");
 $pdo = connect_db();
 
 $response = [
@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     switch ($postData['section']) {
         case USER_SEARCH:
-            $userInfo = getUserAndFollowInfo($pdo, $postData['string']);
+            $userInfo = getUserByUserName($pdo, $postData['string']);
             if ($userInfo !== false) {
                 $response['userList'] = $userInfo;
             } else {
@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             break;
         case WHISPER_SEARCH:
-            $whisperList = getWhisperInfo($pdo, $postData['string']);
+            $whisperList = getWhisperByContent($pdo, $postData['string']);
             if ($whisperList != false) {
                 $response['whisperList'] = $whisperList;
             } else {
