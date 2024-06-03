@@ -50,7 +50,8 @@ class UserInfoActivity : AppCompatActivity() {
         overMenu = overMenu(this)
 
         userId = intent.getStringExtra("userId")
-        Log.d("checkUserInfoActivity", "userId: $userId")
+        followBtn.visibility = if (userId == myApp.loginUserId) View.GONE else View.VISIBLE
+
 
         getUserInfoApiCall()
         getFollowInfoApiCall()
@@ -179,12 +180,11 @@ class UserInfoActivity : AppCompatActivity() {
                             val userData = jsonResponse.getJSONObject("userData")
                             userNameTx.text = userData.getString("userName")
                             userProfileTx.text = userData.getString("profile")
-                            followBtn.visibility = if (userId == myApp.loginUserId) View.GONE else View.VISIBLE
                         }
                     }
                 } catch (e: JSONException) {
                     runOnUiThread {
-                        Toast.makeText(myApp, "Error parsing the response", Toast.LENGTH_LONG).show()
+                        Toast.makeText(myApp, "UserInfo Error parsing the response", Toast.LENGTH_LONG).show()
                     }
                 }
             }
@@ -210,6 +210,7 @@ class UserInfoActivity : AppCompatActivity() {
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
+                Log.d("Followa Response", "Response: $responseBody")
                 try {
                     val jsonResponse = JSONObject(responseBody)
                     if (jsonResponse.has("error")) {
@@ -221,20 +222,22 @@ class UserInfoActivity : AppCompatActivity() {
                         var isFollowing = false
                         for (i in 0 until followList.length()) {
                             val follow = followList.getJSONObject(i)
+                            Log.d("followaaaa", "onResponse: $follow")
                             if (follow.getString("userId") == userId) {
                                 isFollowing = true
                                 break
                             }
                         }
+                        val followerList = jsonResponse.getJSONObject("data").getJSONArray("followerList")
                         runOnUiThread {
                             followBtn.text = if (isFollowing) "Following" else "Follow"
                             followCountTx.text = followList.length().toString()
-                            followerCountTx.text = jsonResponse.getJSONObject("data").getJSONArray("followerList").length().toString()
+                            followerCountTx.text = followerList.length().toString()
                         }
                     }
                 } catch (e: JSONException) {
                     runOnUiThread {
-                        Toast.makeText(myApp, "Error parsing the response", Toast.LENGTH_LONG).show()
+                        Toast.makeText(myApp, "Follow Error parsing the response", Toast.LENGTH_LONG).show()
                     }
                 }
             }
