@@ -67,14 +67,14 @@ class UserInfoActivity : AppCompatActivity() {
         followCountTx.setOnClickListener {
             val intent = Intent(this, FollowListActivity::class.java)
             intent.putExtra("userId", userId)
-            intent.putExtra("type", "follow")
+            intent.putExtra("isFollow", true)
             startActivity(intent)
         }
 
         followerCountTx.setOnClickListener {
             val intent = Intent(this, FollowListActivity::class.java)
             intent.putExtra("userId", userId)
-            intent.putExtra("type", "follower")
+            intent.putExtra("isFollow", false)
             startActivity(intent)
         }
 
@@ -113,18 +113,16 @@ class UserInfoActivity : AppCompatActivity() {
                     val whispers = jsonResponse.getJSONObject("data").getJSONArray("allLikedWhisperList")
                     for (i in 0 until whispers.length()) {
                         val whisper = whispers.getJSONObject(i)
-                        if (whisper.getBoolean("goodFlg")) { // Only add the whisper if "goodFlg" is true
-                            list.add(
-                                Whisper(
-                                    whisper.getInt("whisperNo"),
-                                    whisper.getString("userId"),
-                                    whisper.getString("userName"),
-                                    whisper.getString("postDate"),
-                                    whisper.getString("content"),
-                                    whisper.getBoolean("goodFlg")
-                                )
+                        list.add(
+                            Whisper(
+                                whisper.getInt("whisperNo"),
+                                whisper.getString("userId"),
+                                whisper.getString("userName"),
+                                whisper.getString("postDate"),
+                                whisper.getString("content"),
+                                whisper.getBoolean("goodFlg")
                             )
-                        }
+                        )
                     }
 
                     if (jsonResponse.has("error")) {
@@ -135,7 +133,7 @@ class UserInfoActivity : AppCompatActivity() {
                         runOnUiThread {
                             Log.d("GoodWhispers", list.toString()) // Log danh sách whispers để kiểm tra
                             userRecycle.layoutManager = LinearLayoutManager(this@UserInfoActivity)
-                            val adapter = GoodListAdapter(this@UserInfoActivity, list, myApp.loginUserId)
+                            val adapter = WhisperListAdapter(this@UserInfoActivity, list, myApp.loginUserId)
                             userRecycle.adapter = adapter
                             adapter.notifyDataSetChanged()
                         }

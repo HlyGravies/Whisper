@@ -1,21 +1,30 @@
 package com.example.whisper
 
-import android.content.Context
+import android.app.Activity
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.example.whisper.MyApplication.MyApplication
 import com.example.whisper.model.Whisper
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONException
+import org.json.JSONObject
+import java.io.IOException
 
 class WhisperListAdapter(
-    private val context: Context,
-    private val whispers: List<Whisper>,
+    private val activity: Activity,
+    private val whispers: MutableList<Whisper>,
     private val loginUserId: String
 ) : RecyclerView.Adapter<WhisperListAdapter.WhisperViewHolder>() {
+
+    private val myApp = activity.application as MyApplication
 
     inner class WhisperViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val userImage: ImageView = itemView.findViewById(R.id.userImage)
@@ -25,7 +34,7 @@ class WhisperListAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WhisperViewHolder {
-        val view = LayoutInflater.from(context).inflate(R.layout.recycler_whisper, parent, false)
+        val view = LayoutInflater.from(activity).inflate(R.layout.recycler_whisper, parent, false)
         return WhisperViewHolder(view)
     }
 
@@ -36,17 +45,57 @@ class WhisperListAdapter(
         holder.whisperText.text = whisper.content
         holder.goodImage.setImageResource(if (whisper.goodFlg) R.drawable.ic_star_filled else R.drawable.ic_star_placeholder)
 
-        // Set click listener for userImage
-        holder.userImage.setOnClickListener {
-            val intent = Intent(context, UserInfoActivity::class.java).apply {
-                putExtra("userId", whisper.userId)
-            }
-            context.startActivity(intent)
+        holder.goodImage.setOnClickListener {
+            val client = OkHttpClient()
+            val mediaType: MediaType = "application/json; charset=utf-8".toMediaType()
+            val requestBody = JSONObject().apply {
+                put("userId", loginUserId)
+                put("whisperNo", whisper.whisperNo)
+                put("goodFlg", !whisper.goodFlg) // Toggle the current goodFlg status
+            }.toString().toRequestBody(mediaType)
+            val request = Request.Builder()
+                .url("${myApp.apiUrl}goodCtl.php")
+                .post(requestBody)
+                .build()
+
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    activity.runOnUiThread {
+                        Toast.makeText(activity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                    }
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    val responseBody = response.body?.string()
+                    try {
+                        val jsonResponse = JSONObject(responseBody)
+                        if (jsonResponse.has("error")) {
+                            activity.runOnUiThread {
+                                Toast.makeText(activity, jsonResponse.getString("error"), Toast.LENGTH_LONG).show()
+                            }
+                        } else {
+                            activity.runOnUiThread {
+                                // Toggle the goodFlg status and update the image resource
+                                val index = whispers.indexOf(whisper)
+                                whispers[index].goodFlg = !whispers[index].goodFlg
+                                holder.goodImage.setImageResource(if (whispers[index].goodFlg) R.drawable.ic_star_filled else R.drawable.ic_star_placeholder)
+                            }
+                        }
+                    } catch (e: JSONException) {
+                        activity.runOnUiThread {
+                            Toast.makeText(activity, "Error parsing the response", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
+            })
         }
 
-        // Set click listener for goodImage
-        holder.goodImage.setOnClickListener {
-            // Implement your own logic to handle the like button click event
+        // Set click listener for userImage
+        holder.userImage.setOnClickListener {
+            val intent = Intent(activity, UserInfoActivity::class.java).apply {
+                putExtra("userId", whisper.userId)
+            }
+            activity.startActivity(intent)
         }
     }
 
