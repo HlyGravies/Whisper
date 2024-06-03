@@ -77,19 +77,24 @@ class LoginActivity : AppCompatActivity() {
                         Log.d("json","内容;$json")
                         try{
                             val jsonResponse = JSONObject(json)
-                            if (jsonResponse.has("error") ) {
-                                runOnUiThread {
-                                    Toast.makeText(
-                                        this@LoginActivity,
-                                        "Login failed",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                }
-                            }else {
-                                myApp.loginUserId = userIdText
-                                val insert = Intent(this@LoginActivity, TimelineActivity::class.java)
-                                startActivity(insert)
+                            if (jsonResponse.has("result") ) {
+                                val result = jsonResponse.getString("result")
+                                if(result == "success"){
+                                    myApp.loginUserId = userIdText
+                                    val insert = Intent(this@LoginActivity, TimelineActivity::class.java)
+                                    startActivity(insert)
 
+                                }else {
+                                    val errorNo = jsonResponse.getJSONObject("errorDetails")
+                                    val errortxt = errorNo.getString("003");
+                                    runOnUiThread {
+                                        Toast.makeText(
+                                            this@LoginActivity,
+                                            "$errortxt",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                                }
                             }
                         }catch (e: Exception){
                             runOnUiThread {
