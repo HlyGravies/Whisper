@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.whisper.MyApplication.MyApplication
 import com.example.whisper.MyApplication.overMenu
 import com.example.whisper.adapter.UserListAdapter
+import com.example.whisper.model.Good
 import com.example.whisper.model.User
 import com.example.whisper.model.Whisper
 import okhttp3.*
@@ -108,34 +109,49 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun updateUI(json: JSONObject, section: String) {
-//        val data = json.getJSONArray("data")
         val listUser = mutableListOf<User>()
-        val listWhisper = mutableListOf<Whisper>()
-
-        //val user = json.getJSONArray("userList")
-
+        val listWhisper = mutableListOf<Good>()
 
         runOnUiThread {
             searchRecycle.layoutManager = LinearLayoutManager(this)
             if (section == "1") {
-                val user = json.getJSONObject("userList")
-                listUser.add(
-                    User(
-                        userId = user.getString("userId"),
-                        userName = user.getString("userName"),
-                        whisperCount = user.getInt("whisperCount"),
-                        followCount = user.getInt("followCount"),
-                        followerCount = user.getInt("followerCount")
+                val userArray = json.getJSONArray("userList")
+                for (i in 0 until userArray.length()) {
+                    val user = userArray.getJSONObject(i)
+                    listUser.add(
+                        User(
+                            userId = user.getString("userId"),
+                            userName = user.getString("userName"),
+                            whisperCount = user.getInt("whisperCount"),
+                            followCount = user.getInt("followCount"),
+                            followerCount = user.getInt("followerCount")
+                        )
                     )
-                )
-                searchRecycle.layoutManager = LinearLayoutManager(this@SearchActivity)
-                val adapter = UserListAdapter( listUser)
+                }
+                val adapter = UserListAdapter(listUser)
+                searchRecycle.adapter = adapter
+                adapter.notifyDataSetChanged()
+            } else if (section == "2") {
+                val whisperArray = json.getJSONArray("whisperList")
+                for (i in 0 until whisperArray.length()) {
+                    val whisper = whisperArray.getJSONObject(i)
+                    listWhisper.add(
+                        Good(
+                            whisperNo = whisper.getInt("whisperNo"),
+                            userId = whisper.getString("userId"),
+                            userName = whisper.getString("userName"),
+                            content = whisper.getString("content"),
+                            postDate = whisper.getString("postDate"),
+                            goodCount = whisper.getInt("goodCount")
+                        )
+                    )
+                }
+                val adapter = GoodListAdapter(listWhisper)
                 searchRecycle.adapter = adapter
                 adapter.notifyDataSetChanged()
             }
         }
     }
-
     // 2. Tạo menu khi onCreateOptionsMenu được gọi
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         return overMenu.onCreateOptionsMenu(menu)
