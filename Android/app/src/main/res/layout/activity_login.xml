@@ -35,10 +35,10 @@
         android:layout_width="250dp"
         android:layout_height="40dp"
         android:layout_marginTop="30dp"
-        android:ems="10"
         android:background="@drawable/edittextshape"
-        android:inputType="textPassword"
+        android:ems="10"
         android:hint=" Password"
+        android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/userIdEdit" />
@@ -47,12 +47,13 @@
         android:id="@+id/loginButton"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="40dp"
         android:backgroundTint="@color/blue"
         android:text="Login"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/passwordEdit" />
+        app:layout_constraintTop_toBottomOf="@+id/rememberBox" />
 
     <Button
         android:id="@+id/createButton"
@@ -66,4 +67,15 @@
         app:layout_constraintHorizontal_bias="0.863"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <CheckBox
+        android:id="@+id/rememberBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Remember me"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.257"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/passwordEdit" />
 </androidx.constraintlayout.widget.ConstraintLayout>

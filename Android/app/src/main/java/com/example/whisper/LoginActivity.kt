@@ -1,12 +1,14 @@
 package com.example.whisper
 
 import android.app.Application
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import okhttp3.Call
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Toast
 import com.example.whisper.MyApplication.MyApplication
@@ -21,6 +23,7 @@ import org.json.JSONObject
 import java.io.IOException
 import java.lang.Exception
 import kotlin.math.log
+import android.content.SharedPreferences
 
 class LoginActivity : AppCompatActivity() {
     lateinit var myApp : MyApplication
@@ -33,7 +36,19 @@ class LoginActivity : AppCompatActivity() {
         val Password = findViewById<EditText>(R.id.passwordEdit)
         val LoginButton = findViewById<Button>(R.id.loginButton)
         val createUser = findViewById<Button>(R.id.createButton)
+        val RememberBox = findViewById<CheckBox>(R.id.rememberBox)
         myApp = application as MyApplication
+
+
+        val sharedPref = getSharedPreferences("LoginPrefs", Context.MODE_PRIVATE)
+        val isLoggedIn = sharedPref.getBoolean("isLoggedIn", false)
+        val editor = sharedPref.edit()
+
+        //ログインしっぱなしか確認するところ
+        if (isLoggedIn){
+            val insert = Intent(this@LoginActivity, TimelineActivity::class.java)
+            startActivity(insert)
+        }
 
 
         LoginButton.setOnClickListener {
@@ -81,6 +96,16 @@ class LoginActivity : AppCompatActivity() {
                                 val result = jsonResponse.getString("result")
                                 if(result == "success"){
                                     myApp.loginUserId = userIdText
+                                    //チェック項目(remember me)が押されているか
+                                    if(RememberBox.isChecked){
+                                        // ログイン情報を保存
+                                        editor.putString("userId", userIdText)
+                                        editor.putBoolean("isLoggedIn", true)
+                                        editor.apply()
+                                    }else{
+
+                                    }
+
                                     val insert = Intent(this@LoginActivity, TimelineActivity::class.java)
                                     startActivity(insert)
 
