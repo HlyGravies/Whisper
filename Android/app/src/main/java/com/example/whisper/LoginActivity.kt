@@ -1,6 +1,5 @@
 package com.example.whisper
 
-import android.app.Application
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -22,12 +21,9 @@ import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
 import java.lang.Exception
-import kotlin.math.log
-import android.content.SharedPreferences
 
 class LoginActivity : AppCompatActivity() {
     lateinit var myApp : MyApplication
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -39,16 +35,9 @@ class LoginActivity : AppCompatActivity() {
         val RememberBox = findViewById<CheckBox>(R.id.rememberBox)
         myApp = application as MyApplication
 
-
         val sharedPref = getSharedPreferences("LoginPrefs", Context.MODE_PRIVATE)
-        val isLoggedIn = sharedPref.getBoolean("isLoggedIn", false)
         val editor = sharedPref.edit()
 
-        //ログインしっぱなしか確認するところ
-        if (isLoggedIn){
-            val insert = Intent(this@LoginActivity, TimelineActivity::class.java)
-            startActivity(insert)
-        }
 
 
         LoginButton.setOnClickListener {
@@ -137,10 +126,31 @@ class LoginActivity : AppCompatActivity() {
             }
 
         }
+
+
+        if(myApp.loginUserId=="lo"){
+            Log.d("logout","ture")
+            editor.clear()
+            editor.apply()
+        }
+        val isLoggedIn = sharedPref.getBoolean("isLoggedIn", false)
+
+        //ログインしっぱなしか確認するところ
+        if (isLoggedIn){
+            myApp.loginUserId = sharedPref.getString("userId","").toString()
+            Log.d("islogin","${myApp.loginUserId}")
+            val insert = Intent(this@LoginActivity, TimelineActivity::class.java)
+            startActivity(insert)
+        }
+
+
+
+
         createUser.setOnClickListener {
             //1-3-1
             val insert = Intent(this@LoginActivity, CreateUserActivity::class.java)
             startActivity(insert)
         }
     }
+
 }

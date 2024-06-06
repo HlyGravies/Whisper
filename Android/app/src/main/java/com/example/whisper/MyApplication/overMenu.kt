@@ -11,7 +11,7 @@ import com.example.whisper.TimelineActivity
 import com.example.whisper.UserEditActivity
 import com.example.whisper.UserInfoActivity
 import com.example.whisper.WhisperActivity
-
+import android.content.Context
 class overMenu(private val activity: AppCompatActivity){
     val myApp = activity.application as MyApplication
     fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -50,7 +50,7 @@ class overMenu(private val activity: AppCompatActivity){
 
             R.id.logout -> {
                 // Clear loginUserId global variable
-                myApp.loginUserId = ""
+                myApp.loginUserId = "lo"
                 // Navigate to Login screen and clear previous screen info
                 val intent = Intent(activity, LoginActivity::class.java)
 //                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
