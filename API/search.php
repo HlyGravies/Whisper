@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     switch ($postData['section']) {
         case USER_SEARCH:
-            $userInfo = getUserInfo($pdo, $postData['string']);
+            $userInfo = getUserByUserName($pdo, $postData['string']);
             if ($userInfo !== false) {
                 $response['userList'] = $userInfo;
             } else {
@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             break;
         case WHISPER_SEARCH:
-            $whisperList = getWhisperInfo($pdo, $postData['string']);
+            $whisperList = getWhisperByContent($pdo, $postData['string']);
             if ($whisperList != false) {
                 $response['whisperList'] = $whisperList;
             } else {
