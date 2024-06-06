@@ -1,12 +1,12 @@
 <?php
 /*
-    製作者：QUAN 
+    製作者：QUAN
 */
 
 require_once 'mysqlConnect.php';
 require_once 'errorMsgs.php';
-include("database/database.php");
-include("validation/validation.php");
+include ("database/database.php");
+include ("validation/validation.php");
 $pdo = connect_db();
 
 $response = [

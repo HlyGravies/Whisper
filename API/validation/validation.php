@@ -96,10 +96,6 @@
     
     function validateWhisperData($pdo, $whisperData){
         $errorNums;
-        if (!isUserIdExist($pdo, $whisperData['userId'])) {
-            $errorNums[] = "ERR_USERID_NOT_FOUND";
-            return $errorNums; 
-        }
         if (empty($whisperData['userId'])) {
             $errorNums[] = "006";
         } elseif (strlen($whisperData['userId']) > 30) {

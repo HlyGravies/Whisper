@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp">
+
+    <!-- User Image -->
+    <ImageView
+        android:id="@+id/userImage"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        />
+
+    <!-- User Name -->
+    <TextView
+        android:id="@+id/userNameText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/userImage"
+        android:layout_marginStart="10dp"
+        android:text="UserName"
+        android:textStyle="bold" />
+
+    <!-- Whisper Text -->
+    <TextView
+        android:id="@+id/whisperText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/userImage"
+        android:layout_below="@id/userNameText"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="8dp"
+        android:text="Whisper" />
+
+    <!-- Good Image -->
+    <ImageView
+        android:id="@+id/goodImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="15dp"
+        android:layout_centerVertical="true"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_star_placeholder" />
+</RelativeLayout>

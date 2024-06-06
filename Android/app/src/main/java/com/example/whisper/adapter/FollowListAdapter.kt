@@ -12,7 +12,7 @@ import com.example.whisper.R
 import com.example.whisper.UserInfoActivity
 import com.example.whisper.model.User
 
-class UserListAdapter(private val dataset: MutableList<User>) : RecyclerView.Adapter<UserListAdapter.ViewHolder>(){
+class FollowListAdapter(private val dataset: MutableList<User>) : RecyclerView.Adapter<FollowListAdapter.ViewHolder>(){
 
     inner class ViewHolder(item :View) : RecyclerView.ViewHolder(item){
         val userNameText : TextView = item.findViewById(R.id.userNameText)
@@ -35,7 +35,7 @@ class UserListAdapter(private val dataset: MutableList<User>) : RecyclerView.Ada
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.recycler_user,parent,false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.recycler_follow, parent, false)
         return ViewHolder(view)
     }
 

@@ -1,6 +1,5 @@
 package com.example.whisper
 
-import android.content.ContentValues.TAG
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -13,13 +12,13 @@ import java.io.IOException
 import okhttp3.OkHttpClient
 import org.json.JSONObject
 import android.content.Intent
-import android.util.Log
 import com.example.whisper.MyApplication.MyApplication
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 
 class CreateUserActivity : AppCompatActivity() {
     lateinit var myApp: MyApplication
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_user)
@@ -50,6 +49,7 @@ class CreateUserActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+
             // ユーザー作成APIを呼び出し
             createUser(userName, userId, password)
         }
@@ -62,7 +62,7 @@ class CreateUserActivity : AppCompatActivity() {
 
     private fun createUser(userName: String, userId: String, password: String) {
         val client = OkHttpClient()
-        val mediaType : MediaType = "application/json; charset=utf-8".toMediaType()
+        val mediaType = "application/json; charset=utf-8".toMediaType()
         val requestBody = JSONObject().apply {
             put("userName", userName)
             put("userId", userId)
@@ -76,41 +76,37 @@ class CreateUserActivity : AppCompatActivity() {
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                // ネットワークエラー
                 runOnUiThread {
                     Toast.makeText(applicationContext, "Network Error: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
 
             override fun onResponse(call: Call, response: Response) {
-                val body = response.body?.string()
-                Log.d(TAG, "onResponse: $body")
-                if (!response.isSuccessful || body == null) {
-                    runOnUiThread {
-                        Toast.makeText(applicationContext, "Server error: ${response.code}", Toast.LENGTH_LONG).show()
-                    }
-                    return
-                }
+                response.body?.string()?.let {
+                    // サーバーレスポンスのログ出力
+                    println("Server response: $it")
 
-                try {
-                    val jsonResponse = JSONObject(body)
-                    Log.d("API_RESPONSE", jsonResponse.toString())
-                    if (jsonResponse.has("error")) {
-                        runOnUiThread {
-                            Toast.makeText(applicationContext, jsonResponse.getString("error"), Toast.LENGTH_LONG).show()
+                    try {
+                        val jsonResponse = JSONObject(it)
+                        if (jsonResponse.has("error")) {
+                            runOnUiThread {
+                                Toast.makeText(applicationContext, jsonResponse.getString("error"), Toast.LENGTH_LONG).show()
+                            }
+                        } else {
+                            runOnUiThread {
+                                val intent = Intent(this@CreateUserActivity, TimelineActivity::class.java)
+                                startActivity(intent)
+                                finish()
+                            }
                         }
-                    } else {
+                    } catch (e: Exception) {
                         runOnUiThread {
-                            Toast.makeText(applicationContext, "User created successfully", Toast.LENGTH_LONG).show()
-                            finish()
+                            Toast.makeText(applicationContext, "Error parsing the response", Toast.LENGTH_LONG).show()
                         }
-                    }
-                } catch (e: Exception) {
-                    runOnUiThread {
-                        Toast.makeText(applicationContext, "Error parsing the response", Toast.LENGTH_LONG).show()
                     }
                 }
             }
         })
+
     }
 }

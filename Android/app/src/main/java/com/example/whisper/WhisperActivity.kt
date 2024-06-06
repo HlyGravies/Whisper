@@ -69,6 +69,7 @@ class WhisperActivity : AppCompatActivity() {
 
                     override fun onResponse(call: Call, response: Response) {
                         val responseBody = response.body?.string()
+                        Log.d(TAG, "aaa: $responseBody")
                         try {
                             val jsonResponse = JSONObject(responseBody)
 
@@ -85,6 +86,7 @@ class WhisperActivity : AppCompatActivity() {
                             }
                             val intent = Intent(this@WhisperActivity, UserInfoActivity::class.java)
                             intent.putExtra("userId", myApp.loginUserId)
+                            intent.putExtra("content", wisperEdit.text.toString())
                             startActivity(intent)
                             finish()
 

@@ -28,7 +28,7 @@
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/userNameText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -99,7 +99,7 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/textView7"
+        android:id="@+id/profileText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -132,14 +132,14 @@
             android:layout_marginStart="30dp"
             android:text="GoodInfo" />
 
-        />
     </RadioGroup>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/userRecycle"
         android:layout_width="409dp"
-        android:layout_height="472dp"
-        android:layout_marginTop="20dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
