@@ -245,11 +245,6 @@ function getFollowerInfo($pdo, $userId) {
     return $userData;
 }
 
-// function getFollowFlg($pdo, $data){
-//     $sql = 
-//         "SELECT * FROM follow WHERE userId=:userId,followerUserId=:loginUserId";
-// }
-
 function getUserAndFollowInfo($pdo, $userId){
     $sql = 
         "SELECT 
