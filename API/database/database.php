@@ -155,29 +155,29 @@ function getUserWhisperInfo($pdo, $postData){
 
     if($likedWhisperNos != null){
     $getAllLikedWhisperSql = 
-    "SELECT 
-        whisper.whisperNo, 
-        whisper.userId, 
-        user.userName, 
-        whisper.postDate, 
-        whisper.content
-        -- COUNT(DISTINCT goodInfo.userId) AS goodCount
-        FROM 
-            whisper
-        INNER JOIN 
-            user ON whisper.userId = user.userId
-        INNER JOIN
-            goodInfo ON whisper.whisperNo = goodInfo.whisperNo
-        WHERE 
-            goodInfo.whisperNo IN ($likedWhisperNos)
-        GROUP BY
+        "SELECT 
             whisper.whisperNo, 
             whisper.userId, 
             user.userName, 
             whisper.postDate, 
             whisper.content
-        ORDER BY
-            whisper.postDate DESC";
+            -- COUNT(DISTINCT goodInfo.userId) AS goodCount
+            FROM 
+                whisper
+            INNER JOIN 
+                user ON whisper.userId = user.userId
+            INNER JOIN
+                goodInfo ON whisper.whisperNo = goodInfo.whisperNo
+            WHERE 
+                goodInfo.whisperNo IN ($likedWhisperNos)
+            GROUP BY
+                whisper.whisperNo, 
+                whisper.userId, 
+                user.userName, 
+                whisper.postDate, 
+                whisper.content
+            ORDER BY
+                whisper.postDate DESC";
         $getAllLikedWhisperStmt = $pdo -> prepare($getAllLikedWhisperSql);
         $getAllLikedWhisperStmt -> execute();
         $AllLikedWhisperList = $getAllLikedWhisperStmt -> fetchAll(PDO::FETCH_ASSOC);
