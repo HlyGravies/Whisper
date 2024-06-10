@@ -25,6 +25,7 @@ $msgList = array(
   "ERR_EMPTY_FOLLOWUSERID"    => "フォロユーザIDが入力されていません",
   "ERR_FOLLOWUSERID_TOOLONG"  => "FOLLOWUSERIDを30文字以内で入力してください",
   "ERR_USERID_NOT_FOUND"                => "USERIDが見つかりません",
+  "ERR_WHISPERNO__NOT_FOUND"        => "WHISPERNOが見つかりません",
   // "ERR_ICONPATH_TOOLONG" => "検索区分が不正です",
 );
 

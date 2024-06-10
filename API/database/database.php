@@ -11,36 +11,6 @@ function getUserInfo($pdo, $userId) {
     return $getUserStmt->fetch(PDO::FETCH_ASSOC);
 }
 
-// function getWhisperInfo($pdo, $whisperNo) {
-//     $getUserSql = 
-//         "SELECT 
-//             whisper.whisperNo, 
-//             whisper.userId, 
-//             user.userName, 
-//             whisper.postDate, 
-//             whisper.content, 
-//             COUNT(DISTINCT goodInfo.userId) AS goodCount
-//         FROM 
-//             whisper
-//         INNER JOIN 
-//             user ON whisper.userId = user.userId
-//         INNER JOIN 
-//             goodInfo ON whisper.whisperNo = goodInfo.whisperNo
-//         WHERE 
-//             whisper.whisperNo = :whisperNo
-//         GROUP BY
-//             whisper.whisperNo, 
-//             whisper.userId, 
-//             user.userName, 
-//             whisper.postDate, 
-//             whisper.content";
-
-//     $getUserStmt = $pdo->prepare($getUserSql);
-//     $getUserStmt->bindParam(':whisperNo', $whisperNo);
-//     $getUserStmt->execute();
-//     return $getUserStmt->fetch(PDO::FETCH_ASSOC);
-// }
-
 function getTimeLineByUserId($pdo, $userId){
     $getFollowUserIdSql = "SELECT followUserId FROM follow WHERE userId = :userId";
     $getFolllowUserIdStmt = $pdo->prepare($getFollowUserIdSql);
@@ -214,6 +184,14 @@ function isUserIdExist($pdo, $userId){
     $getUserStmt->bindParam(':userId', $userId);
     $getUserStmt->execute();
     return $getUserStmt->fetch(PDO::FETCH_ASSOC);
+}
+
+function isWhisperNoExist($pdo, $whisperNo){
+    $sql = "SELECT whisperNo FROM whisper WHERE whisperNo = :whisperNo";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':whisperNo', $whisperNo);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
 function getFollowerInfo($pdo, $userId) {
