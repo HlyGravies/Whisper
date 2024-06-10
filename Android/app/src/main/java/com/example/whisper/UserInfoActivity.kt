@@ -7,12 +7,14 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.whisper.MyApplication.MyApplication
 import com.example.whisper.MyApplication.overMenu
 import com.example.whisper.model.Whisper
@@ -29,6 +31,8 @@ class UserInfoActivity : AppCompatActivity() {
     private lateinit var userProfileTx: TextView
     private lateinit var followCountTx: TextView
     private lateinit var followerCountTx: TextView
+    private lateinit var userImageView: ImageView
+    private lateinit var errorText: TextView
     private lateinit var followBtn: Button
     private lateinit var userRecycle: RecyclerView
     private lateinit var radioGroup: RadioGroup
@@ -43,10 +47,12 @@ class UserInfoActivity : AppCompatActivity() {
         userNameTx = findViewById(R.id.userNameText)
         userProfileTx = findViewById(R.id.profileText)
         followCountTx = findViewById(R.id.followCntText)
+        userImageView = findViewById(R.id.userImage)
         followerCountTx = findViewById(R.id.followerCntText)
         followBtn = findViewById(R.id.followButton)
         userRecycle = findViewById(R.id.userRecycle)
         radioGroup = findViewById(R.id.radioGroup)
+        errorText = findViewById(R.id.errorText)
         overMenu = overMenu(this)
 
         userId = intent.getStringExtra("userId")
@@ -110,33 +116,52 @@ class UserInfoActivity : AppCompatActivity() {
 
                 try {
                     val jsonResponse = JSONObject(responseBody)
-                    val list = mutableListOf<Whisper>()
-                    val whispers = jsonResponse.getJSONObject("data").getJSONArray("allLikedWhisperList")
-                    for (i in 0 until whispers.length()) {
-                        val whisper = whispers.getJSONObject(i)
-                        list.add(
-                            Whisper(
-                                whisper.getInt("whisperNo"),
-                                whisper.getString("userId"),
-                                whisper.getString("userName"),
-                                whisper.getString("postDate"),
-                                whisper.getString("content"),
-                                whisper.getBoolean("goodFlg")
-                            )
-                        )
-                    }
-
-                    if (jsonResponse.has("error")) {
+                    if (jsonResponse.getJSONObject("data").isNull("allLikedWhisperList")) {
                         runOnUiThread {
-                            Toast.makeText(myApp, jsonResponse.getString("error"), Toast.LENGTH_LONG).show()
+                            errorText.text = "”いいね！”した囁やきがありません！"
                         }
-                    } else {
-                        runOnUiThread {
-                            Log.d("GoodWhispers", list.toString()) // Log danh sách whispers để kiểm tra
-                            userRecycle.layoutManager = LinearLayoutManager(this@UserInfoActivity)
-                            val adapter = WhisperListAdapter(this@UserInfoActivity, list, myApp.loginUserId)
-                            userRecycle.adapter = adapter
-                            adapter.notifyDataSetChanged()
+                    }else {
+                        val list = mutableListOf<Whisper>()
+                        val whispers =
+                            jsonResponse.getJSONObject("data").getJSONArray("allLikedWhisperList")
+                        for (i in 0 until whispers.length()) {
+                            val whisper = whispers.getJSONObject(i)
+                            list.add(
+                                Whisper(
+                                    whisper.getInt("whisperNo"),
+                                    whisper.getString("userId"),
+                                    whisper.getString("userName"),
+                                    whisper.getString("postDate"),
+                                    whisper.getString("content"),
+                                    whisper.getBoolean("goodFlg")
+                                )
+                            )
+                        }
+
+                        if (jsonResponse.has("error")) {
+                            runOnUiThread {
+                                Toast.makeText(
+                                    myApp,
+                                    jsonResponse.getString("error"),
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        } else {
+                            runOnUiThread {
+                                Log.d(
+                                    "GoodWhispers",
+                                    list.toString()
+                                ) // Log danh sách whispers để kiểm tra
+                                userRecycle.layoutManager =
+                                    LinearLayoutManager(this@UserInfoActivity)
+                                val adapter = WhisperListAdapter(
+                                    this@UserInfoActivity,
+                                    list,
+                                    myApp.loginUserId
+                                )
+                                userRecycle.adapter = adapter
+                                adapter.notifyDataSetChanged()
+                            }
                         }
                     }
                 } catch (e: JSONException) {
@@ -180,6 +205,10 @@ class UserInfoActivity : AppCompatActivity() {
                             val userData = jsonResponse.getJSONObject("userData")
                             userNameTx.text = userData.getString("userName")
                             userProfileTx.text = userData.getString("profile")
+                            val userImageUrl = userData.getString("iconPath")
+                            Glide.with(this@UserInfoActivity)
+                                .load(userImageUrl)
+                                .into(userImageView)
                         }
                     }
                 } catch (e: JSONException) {
@@ -265,46 +294,63 @@ class UserInfoActivity : AppCompatActivity() {
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
-                //Log.d("API Response", responseBody ?: "No response body")
+                Log.d("API Response", responseBody ?: "No response body")
 
                 try {
                     val jsonResponse = JSONObject(responseBody)
-                    val list = mutableListOf<Whisper>()
-                    val whispers = jsonResponse.getJSONObject("data").getJSONArray("whisperList")
-                    //Log.d("Whispers", whispers.toString())
-                    for (i in 0 until whispers.length()) {
-                        val whisper = whispers.getJSONObject(i)
-                        list.add(
-                            Whisper(
-                                whisper.getInt("whisperNo"),
-                                whisper.getString("userId"),
-                                whisper.getString("userName"),
-                                whisper.getString("postDate"),
-                                whisper.getString("content"),
-                                whisper.getBoolean("goodFlg")
-                            )
-                        )
-
-                    }
-
-                    if (jsonResponse.has("error")) {
+                    if (jsonResponse.getJSONObject("data").isNull("whisperList")) {
                         runOnUiThread {
-                            Toast.makeText(myApp, jsonResponse.getString("error"), Toast.LENGTH_LONG).show()
+                            errorText.text = "まだ囁やきがありません！"
                         }
-                    } else {
-                        runOnUiThread {
-                             // Log danh sách whispers để kiểm tra
-                            Log.d("Whispers", list.toString())
-                            userRecycle.layoutManager = LinearLayoutManager(this@UserInfoActivity)
-                            val adapter = WhisperListAdapter(this@UserInfoActivity, list,myApp.loginUserId)
-                            userRecycle.adapter = adapter
-                            adapter.notifyDataSetChanged()
+                    }else {
+                        val list = mutableListOf<Whisper>()
+                        val whispers =
+                            jsonResponse.getJSONObject("data").getJSONArray("whisperList")
+                        //Log.d("Whispers", whispers.toString())
+                        for (i in 0 until whispers.length()) {
+                            val whisper = whispers.getJSONObject(i)
+                            list.add(
+                                Whisper(
+                                    whisper.getInt("whisperNo"),
+                                    whisper.getString("userId"),
+                                    whisper.getString("userName"),
+                                    whisper.getString("postDate"),
+                                    whisper.getString("content"),
+                                    whisper.getBoolean("goodFlg")
+                                )
+                            )
 
+                        }
+
+                        if (jsonResponse.has("error")) {
+                            runOnUiThread {
+                                Toast.makeText(
+                                    myApp,
+                                    jsonResponse.getString("error"),
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        } else {
+                            runOnUiThread {
+                                // Log danh sách whispers để kiểm tra
+                                Log.d("Whispers", list.toString())
+                                userRecycle.layoutManager =
+                                    LinearLayoutManager(this@UserInfoActivity)
+                                val adapter = WhisperListAdapter(
+                                    this@UserInfoActivity,
+                                    list,
+                                    myApp.loginUserId
+                                )
+                                userRecycle.adapter = adapter
+                                adapter.notifyDataSetChanged()
+
+                            }
                         }
                     }
                 } catch (e: JSONException) {
                     runOnUiThread {
                         Toast.makeText(myApp, "Error parsing the response", Toast.LENGTH_LONG).show()
+                        Log.e("JSON Parsing Error", "Error parsing the response", e)
                     }
                 }
             }
