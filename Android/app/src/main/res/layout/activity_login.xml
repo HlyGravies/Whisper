@@ -78,4 +78,15 @@
         app:layout_constraintHorizontal_bias="0.257"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/passwordEdit" />
+
+    <ImageView
+        android:id="@+id/passwordobservationView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="@+id/passwordEdit"
+        app:layout_constraintBottom_toBottomOf="@+id/passwordEdit"
+        app:layout_constraintTop_toTopOf="@+id/passwordEdit"
+        app:srcCompat="@drawable/baseline_visibility_off_24"
+        tools:layout_editor_absoluteY="178dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

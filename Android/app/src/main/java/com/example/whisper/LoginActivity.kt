@@ -4,11 +4,14 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import okhttp3.Call
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Toast
 import com.example.whisper.MyApplication.MyApplication
 import okhttp3.Callback
@@ -33,12 +36,26 @@ class LoginActivity : AppCompatActivity() {
         val LoginButton = findViewById<Button>(R.id.loginButton)
         val createUser = findViewById<Button>(R.id.createButton)
         val RememberBox = findViewById<CheckBox>(R.id.rememberBox)
+        val PasswordOV = findViewById<ImageView>(R.id.passwordobservationView)
         myApp = application as MyApplication
 
         val sharedPref = getSharedPreferences("LoginPrefs", Context.MODE_PRIVATE)
         val editor = sharedPref.edit()
+        var isPassVisible = false;
 
-
+        //passwordOVを押したとき
+        PasswordOV.setOnClickListener{
+            Log.d("パスワード表示ボタン","押せてる");
+            if(isPassVisible){
+                Password.transformationMethod = PasswordTransformationMethod.getInstance();
+                PasswordOV.setImageResource(R.drawable.baseline_visibility_off_24)
+            }else{
+                Password.transformationMethod = HideReturnsTransformationMethod.getInstance()
+                PasswordOV.setImageResource(R.drawable.baseline_visibility_24)
+            }
+            isPassVisible = !isPassVisible
+            Password.setSelection(Password.text.length)
+        }
 
         LoginButton.setOnClickListener {
             //1-2-1
