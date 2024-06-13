@@ -27,11 +27,14 @@ function getTimeLineByUserId($pdo, $userId){
             whisper.userId, 
             user.userName, 
             whisper.postDate, 
-            whisper.content
+            whisper.content,
+            COUNT(DISTINCT goodInfo.userId) AS goodCount
         FROM 
             whisper
         INNER JOIN 
             user ON whisper.userId = user.userId
+        LEFT JOIN
+            goodInfo ON whisper.whisperNo = goodInfo.whisperNo
         WHERE 
             whisper.userId IN ($placeholders)
         GROUP BY
@@ -78,11 +81,14 @@ function getUserWhisperInfo($pdo, $postData){
             whisper.userId, 
             user.userName, 
             whisper.postDate, 
-            whisper.content
+            whisper.content,
+            COUNT(DISTINCT goodInfo.userId) AS goodCount
         FROM 
             whisper
         INNER JOIN 
             user ON whisper.userId = user.userId
+        LEFT JOIN
+            goodInfo ON whisper.whisperNo = goodInfo.whisperNo
         WHERE 
             whisper.userId = :userId
         GROUP BY
@@ -130,13 +136,13 @@ function getUserWhisperInfo($pdo, $postData){
             whisper.userId, 
             user.userName, 
             whisper.postDate, 
-            whisper.content
-            -- COUNT(DISTINCT goodInfo.userId) AS goodCount
+            whisper.content,
+            COUNT(DISTINCT goodInfo.userId) AS goodCount
             FROM 
                 whisper
             INNER JOIN 
                 user ON whisper.userId = user.userId
-            INNER JOIN
+            LEFT JOIN
                 goodInfo ON whisper.whisperNo = goodInfo.whisperNo
             WHERE 
                 goodInfo.whisperNo IN ($likedWhisperNos)
