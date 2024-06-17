@@ -22,7 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $sql = "UPDATE user
             SET userName = :userName,
                 -- password = :password,
-                profile = :profile
+                profile = :profile,
+                iconPath = :iconPath    
             WHERE userId = :userId;
             ";
         try {
@@ -31,6 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bindParam(':userName', $userData['userName']);
             // $stmt->bindParam(':password', $userData['password']);
             $stmt->bindParam(':profile', $userData['profile']);
+            $stmt->bindParam(':iconPath', $userData['iconPath']);
             $stmt->execute();
             $userData = getUserInfo($pdo, $userData['userId']);;
             $response['result'] = "success";
