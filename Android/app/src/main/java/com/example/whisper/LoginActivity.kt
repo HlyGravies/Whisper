@@ -45,7 +45,6 @@ class LoginActivity : AppCompatActivity() {
 
         //passwordOVを押したとき
         PasswordOV.setOnClickListener{
-            Log.d("パスワード表示ボタン","押せてる");
             if(isPassVisible){
                 Password.transformationMethod = PasswordTransformationMethod.getInstance();
                 PasswordOV.setImageResource(R.drawable.baseline_visibility_off_24)
@@ -56,6 +55,7 @@ class LoginActivity : AppCompatActivity() {
             isPassVisible = !isPassVisible
             Password.setSelection(Password.text.length)
         }
+        var pass = Password.text.length
 
         LoginButton.setOnClickListener {
             //1-2-1
@@ -108,8 +108,6 @@ class LoginActivity : AppCompatActivity() {
                                         editor.putString("userId", userIdText)
                                         editor.putBoolean("isLoggedIn", true)
                                         editor.apply()
-                                    }else{
-
                                     }
 
                                     val insert = Intent(this@LoginActivity, TimelineActivity::class.java)
@@ -144,7 +142,6 @@ class LoginActivity : AppCompatActivity() {
 
         }
 
-
         if(myApp.loginUserId=="lo"){
             Log.d("logout","ture")
             editor.clear()
@@ -159,9 +156,6 @@ class LoginActivity : AppCompatActivity() {
             val insert = Intent(this@LoginActivity, TimelineActivity::class.java)
             startActivity(insert)
         }
-
-
-
 
         createUser.setOnClickListener {
             //1-3-1
