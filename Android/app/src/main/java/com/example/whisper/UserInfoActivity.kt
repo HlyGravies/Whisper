@@ -62,11 +62,17 @@ class UserInfoActivity : AppCompatActivity() {
         getUserInfoApiCall()
         getFollowInfoApiCall()
 
+        userRecycle.layoutManager = LinearLayoutManager(this@UserInfoActivity)
+        userRecycle.adapter = WhisperListAdapter(this@UserInfoActivity, mutableListOf(), myApp.loginUserId)
+
 
         radioGroup.setOnCheckedChangeListener { _, checkedId ->
+            (userRecycle.adapter as WhisperListAdapter).clearData()
             if (checkedId == R.id.whisperRadio) {
+                errorText.text = "" // Clear the error text
                 getUserWhispersApiCall()
-            }else if (checkedId == R.id.goodInfoRadio) {
+            } else if (checkedId == R.id.goodInfoRadio) {
+                errorText.text = "" // Clear the error text
                 getUserGoodWhispersApiCall()
             }
         }
@@ -133,6 +139,7 @@ class UserInfoActivity : AppCompatActivity() {
                                     whisper.getString("userName"),
                                     whisper.getString("postDate"),
                                     whisper.getString("content"),
+                                    whisper.getInt("goodCount"),
                                     whisper.getBoolean("goodFlg")
                                 )
                             )
@@ -201,14 +208,18 @@ class UserInfoActivity : AppCompatActivity() {
                             Toast.makeText(myApp, jsonResponse.getString("error"), Toast.LENGTH_LONG).show()
                         }
                     } else {
-                        runOnUiThread {
+                        if (jsonResponse.has("userData") && !jsonResponse.isNull("userData")) {
                             val userData = jsonResponse.getJSONObject("userData")
-                            userNameTx.text = userData.getString("userName")
-                            userProfileTx.text = userData.getString("profile")
-                            val userImageUrl = userData.getString("iconPath")
-                            Glide.with(this@UserInfoActivity)
-                                .load(userImageUrl)
-                                .into(userImageView)
+                            runOnUiThread {
+                                userNameTx.text = userData.getString("userName")
+                                userProfileTx.text = userData.getString("profile")
+                                val userImageUrl = userData.getString("iconPath")
+                                Glide.with(this@UserInfoActivity)
+                                    .load(userImageUrl)
+                                    .into(userImageView)
+                            }
+                        } else {
+                            // Handle the case where userData is not present or null
                         }
                     }
                 } catch (e: JSONException) {
@@ -316,6 +327,7 @@ class UserInfoActivity : AppCompatActivity() {
                                     whisper.getString("userName"),
                                     whisper.getString("postDate"),
                                     whisper.getString("content"),
+                                    whisper.getInt("goodCount"),
                                     whisper.getBoolean("goodFlg")
                                 )
                             )

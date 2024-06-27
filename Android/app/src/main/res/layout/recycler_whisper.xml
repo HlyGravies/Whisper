@@ -18,8 +18,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginEnd="10dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="3dp"
             android:src="@drawable/ic_dot" />
 
         <ImageView
@@ -72,18 +72,39 @@
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="5dp"
-                android:layout_marginEnd="30dp"
                 android:background="@android:color/transparent"
                 android:src="@drawable/ic_star_placeholder" />
+            <TextView
+                android:id="@+id/goodCountText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/goodImage"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="30dp"
+                android:textAlignment="center"
+                android:gravity="center"
+                android:textSize="18sp"
+                android:background="@android:color/transparent" />
 
             <ImageView
                 android:id="@+id/cmtImage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_toEndOf="@+id/goodImage"
+                android:layout_toEndOf="@+id/goodCountText"
                 android:background="@android:color/transparent"
                 android:src="@drawable/ic_comment" />
+            <TextView
+                android:id="@+id/cmtCountText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/cmtImage"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="30dp"
+                android:textAlignment="center"
+                android:gravity="center"
+                android:textSize="18sp"
+                android:background="@android:color/transparent" />
         </RelativeLayout>
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

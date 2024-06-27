@@ -6,6 +6,7 @@ data class Whisper(
     val userName: String,
     val postDate: String,
     val content: String,
+    var goodCount: Int,
     var goodFlg: Boolean
 )
 

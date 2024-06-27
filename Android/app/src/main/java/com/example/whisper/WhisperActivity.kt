@@ -48,9 +48,10 @@ class WhisperActivity : AppCompatActivity() {
             try {
                 val client = OkHttpClient()
                 val mediaType: MediaType = "application/json; charset=utf-8".toMediaType()
+                val content = wisperEdit.text.toString().replace("\n", "\\n")
                 val requestBody = JSONObject().apply {
                     put("userId", myApp.loginUserId)
-                    put("content", wisperEdit.text.toString())
+                    put("content",content)
                 }.toString().toRequestBody(mediaType)
                 val request = Request.Builder()
                     .url(myApp.apiUrl+ "whisperAdd.php")

@@ -80,6 +80,7 @@ class TimelineActivity : AppCompatActivity() {
                                 item.getString("userName"),
                                 item.getString("postDate"),
                                 item.getString("content"),
+                                item.getInt("goodCount"),
                                 item.getBoolean("goodFlg")
                             )
                             whispers.add(whisper)
