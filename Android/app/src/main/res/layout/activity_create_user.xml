@@ -8,8 +8,8 @@
 
     <TextView
         android:id="@+id/createUserText"
-        android:layout_width="230dp"
-        android:layout_height="36dp"
+        android:layout_width="250dp"
+        android:layout_height="40dp"
         android:text="Create User"
         android:textAlignment="center"
         android:textSize="30dp"
@@ -22,82 +22,102 @@
 
     <EditText
         android:id="@+id/userNameEdit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="UserName"
+        android:layout_width="250dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/edittext_border"
+        android:hint=" UserName"
         android:inputType="text"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:maxLength="20"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.122" />
+        app:layout_constraintTop_toBottomOf="@id/createUserText" />
 
     <EditText
         android:id="@+id/userIdEdit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="E-mail(userId)"
+        android:layout_width="250dp"
+        android:layout_height="40dp"
+        android:hint=" E-mail (userId)"
         android:inputType="text"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        android:maxLength="30"
+        android:background="@drawable/edittext_border"
+        app:layout_constraintTop_toBottomOf="@id/userNameEdit"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.214" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"/>
 
     <EditText
         android:id="@+id/passwordEdit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Password"
+        android:layout_width="250dp"
+        android:layout_height="40dp"
+        android:hint=" Password"
         android:inputType="textPassword"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        android:maxLength="64"
+        android:background="@drawable/edittext_border"
+        app:layout_constraintTop_toBottomOf="@id/userIdEdit"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.311" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"/>
 
     <EditText
         android:id="@+id/rePasswordEdit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Re:Password"
+        android:layout_width="250dp"
+        android:layout_height="40dp"
+        android:hint=" Re: Password"
         android:inputType="textPassword"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        android:maxLength="64"
+        android:background="@drawable/edittext_border"
+        app:layout_constraintTop_toBottomOf="@id/passwordEdit"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.412" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"/>
 
     <Button
         android:id="@+id/createButton"
-        android:layout_width="213dp"
+        android:layout_width="250dp"
         android:layout_height="72dp"
-        android:backgroundTint="#2196F3"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/button_background"
         android:text="User Create"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textColor="#FFFFFF"
+        app:backgroundTint="#2196F3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.523" />
+        app:layout_constraintTop_toBottomOf="@id/rePasswordEdit" />
 
     <Button
         android:id="@+id/cancelButton"
+        android:layout_width="250dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/button_background"
+        android:text="Cancel"
+        android:textColor="#FFFFFF"
+        app:backgroundTint="#2196F3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/createButton" />
+
+    <ImageView
+        android:id="@+id/passwordView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="#2196F3"
-        android:text="cancel"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.69"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.638" />
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="@+id/passwordEdit"
+        app:layout_constraintBottom_toBottomOf="@+id/passwordEdit"
+        app:layout_constraintTop_toTopOf="@+id/passwordEdit"
+        app:srcCompat="@drawable/baseline_visibility_off_24"
+        tools:layout_editor_absoluteY="178dp" />
+
+    <ImageView
+        android:id="@+id/rePasswordObservationView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="@+id/rePasswordEdit"
+        app:layout_constraintBottom_toBottomOf="@+id/rePasswordEdit"
+        app:layout_constraintTop_toTopOf="@+id/rePasswordEdit"
+        app:srcCompat="@drawable/baseline_visibility_off_24"
+        tools:layout_editor_absoluteY="178dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

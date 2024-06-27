@@ -12,6 +12,10 @@ import java.io.IOException
 import okhttp3.OkHttpClient
 import org.json.JSONObject
 import android.content.Intent
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
+import android.util.Log
+import android.widget.ImageView
 import com.example.whisper.MyApplication.MyApplication
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -29,8 +33,37 @@ class CreateUserActivity : AppCompatActivity() {
         val rePasswordEdit = findViewById<EditText>(R.id.rePasswordEdit)
         val createButton = findViewById<Button>(R.id.createButton)
         val cancelButton = findViewById<Button>(R.id.cancelButton)
+        val PasswordOV1 = findViewById<ImageView>(R.id.passwordView1)
+        val PasswordOV2 = findViewById<ImageView>(R.id.rePasswordObservationView)
         myApp = application as MyApplication
 
+        var isPassVisible = false;
+
+        //passwordOV1を押したとき
+        PasswordOV1.setOnClickListener{
+            Log.d("パスワード表示ボタン","押せてる");
+            if(isPassVisible){
+                passwordEdit.transformationMethod = PasswordTransformationMethod.getInstance();
+                PasswordOV1.setImageResource(R.drawable.baseline_visibility_off_24)
+            }else{
+                passwordEdit.transformationMethod = HideReturnsTransformationMethod.getInstance()
+                PasswordOV1.setImageResource(R.drawable.baseline_visibility_24)
+            }
+            isPassVisible = !isPassVisible
+            passwordEdit.setSelection(passwordEdit.text.length)
+        }//passwordOV2を押したとき
+        PasswordOV2.setOnClickListener{
+            Log.d("パスワード表示ボタン","押せてる");
+            if(isPassVisible){
+                rePasswordEdit.transformationMethod = PasswordTransformationMethod.getInstance();
+                PasswordOV2.setImageResource(R.drawable.baseline_visibility_off_24)
+            }else{
+                rePasswordEdit.transformationMethod = HideReturnsTransformationMethod.getInstance()
+                PasswordOV2.setImageResource(R.drawable.baseline_visibility_24)
+            }
+            isPassVisible = !isPassVisible
+            rePasswordEdit.setSelection(rePasswordEdit.text.length)
+        }
         createButton.setOnClickListener {
             val userName = userNameEdit.text.toString()
             val userId = userIdEdit.text.toString()
