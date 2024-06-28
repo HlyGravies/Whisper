@@ -17,39 +17,8 @@
         }
     }
     
-    function validateUserData($pdo, $userData){
-        $errorNums;
-        if (isUserIdExist($pdo, $userData['userId'])) {
-            $errorNums[] = "USERID_ALREADY_EXISTS";
-            return $errorNums; 
-        }
-        if (empty($userData['userId'])) {
-            $errorNums[] = "006";
-        } elseif (strlen($userData['userId']) > 30) {
-            $errorNums[] = "ERR_USERID_TOOLONG";
-        }
-        if (empty($userData['userName'])) {
-            $errorNums[] = "011";
-        } elseif (strlen($userData['userName']) > 20) {
-            $errorNums[] = "ERR_USERNAME_TOOLONG";
-        }
-        if (empty($userData['password'])) {
-            $errorNums[] = "007";
-        } elseif (strlen($userData['password']) > 64) {
-            $errorNums[] = "ERR_PASSWORD_TOOLONG";
-        }
-        // if(mb_strlen($userData['profile'], 'UTF-8') > 200){
-        //     $errorNums[] = "ERR_PROFILE_TOOLONG";
-        // }
-        if(!empty($errorNums)){
-            return $errorNums;
-        }else{
-            return null;
-        }  
-    }
-
     function validateUserUpdateData($pdo, $userUpdateData){
-        $errorNums = array();
+        $errorNums = array(); // Ensure $errorNums is always initialized as an array.
         if (empty($userUpdateData['userId'])) {
             $errorNums[] = "006";
         } elseif (strlen($userUpdateData['userId']) > 30) {
@@ -60,12 +29,8 @@
         } elseif (strlen($userUpdateData['userName']) > 20) {
             $errorNums[] = "ERR_USERNAME_TOOLONG";
         }
-        // if (empty($userUpdateData['password'])) {
-        //     $errorNums[] = "007";
-        // } elseif (strlen($userUpdateData['password']) > 64) {
-        //     $errorNums[] = "ERR_PASSWORD_TOOLONG";
-        // }
-        if(mb_strlen($userUpdateData['profile'], 'UTF-8') > 200){
+        // Check if 'profile' is set and not null before using it in mb_strlen
+        if(isset($userUpdateData['profile']) && mb_strlen($userUpdateData['profile'], 'UTF-8') > 200){
             $errorNums[] = "ERR_PROFILE_TOOLONG";
         }
         if(!empty($errorNums)){
@@ -74,6 +39,33 @@
             return null;
         }  
     }
+
+    // function validateUserUpdateData($pdo, $userUpdateData){
+    //     $errorNums = array();
+    //     if (empty($userUpdateData['userId'])) {
+    //         $errorNums[] = "006";
+    //     } elseif (strlen($userUpdateData['userId']) > 30) {
+    //         $errorNums[] = "ERR_USERID_TOOLONG";
+    //     }
+    //     if (empty($userUpdateData['userName'])) {
+    //         $errorNums[] = "011";
+    //     } elseif (strlen($userUpdateData['userName']) > 20) {
+    //         $errorNums[] = "ERR_USERNAME_TOOLONG";
+    //     }
+    //     // if (empty($userUpdateData['password'])) {
+    //     //     $errorNums[] = "007";
+    //     // } elseif (strlen($userUpdateData['password']) > 64) {
+    //     //     $errorNums[] = "ERR_PASSWORD_TOOLONG";
+    //     // }
+    //     if(mb_strlen($userUpdateData['profile'], 'UTF-8') > 200){
+    //         $errorNums[] = "ERR_PROFILE_TOOLONG";
+    //     }
+    //     if(!empty($errorNums)){
+    //         return $errorNums;
+    //     } else {
+    //         return null;
+    //     }  
+    // }
 
     function validateLoginData($loginData){
         $errorNums;

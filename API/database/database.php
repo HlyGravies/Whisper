@@ -11,7 +11,7 @@ function getUserInfo($pdo, $userId) {
     return $getUserStmt->fetch(PDO::FETCH_ASSOC);
 }
 
-function getTimeLineByUserId($pdo, $userId){
+function getTimeLineByUserId($pdo, $userId) {
     $getFollowUserIdSql = "SELECT followUserId FROM follow WHERE userId = :userId";
     $getFolllowUserIdStmt = $pdo->prepare($getFollowUserIdSql);
     $getFolllowUserIdStmt->bindParam(':userId', $userId);
@@ -19,13 +19,14 @@ function getTimeLineByUserId($pdo, $userId){
 
     $followUserIds = $getFolllowUserIdStmt->fetchAll(PDO::FETCH_COLUMN);
     $followUserIdString = implode(', ', $followUserIds);
-    $placeholders = implode(', ', array_fill(0, count($followUserIds)+1, '?'));
+    $placeholders = implode(', ', array_fill(0, count($followUserIds) + 1, '?'));
 
     $getTimeLineInfoSql = 
         "SELECT 
             whisper.whisperNo, 
             whisper.userId, 
             user.userName, 
+            user.iconPath, 
             whisper.postDate, 
             whisper.content,
             COUNT(DISTINCT goodInfo.userId) AS goodCount
@@ -41,23 +42,27 @@ function getTimeLineByUserId($pdo, $userId){
             whisper.whisperNo, 
             whisper.userId, 
             user.userName, 
+            user.iconPath, 
             whisper.postDate, 
             whisper.content
         ORDER BY
             whisper.postDate DESC";
     $getTimelineInfoStmt = $pdo->prepare($getTimeLineInfoSql);
-    
+
     foreach ($followUserIds as $key => $value) {
         $getTimelineInfoStmt->bindValue($key + 1, $value);
     }
     $getTimelineInfoStmt->bindValue(count($followUserIds) + 1, $userId);
     $getTimelineInfoStmt->execute();
     $whisperList = $getTimelineInfoStmt->fetchAll(PDO::FETCH_ASSOC);
+
     foreach ($whisperList as $key => $whisper) {
         $whisperList[$key]['goodFlg'] = getGoodFlag($pdo, $userId, $whisper['whisperNo']);
-    }        
+    }
+
     return $whisperList;
 }
+
 
 function getGoodFlag($pdo, $userId, $whisperNo){
     $sql = "SELECT * FROM goodInfo WHERE userId =:userId AND whisperNo= :whisperNo";
@@ -248,25 +253,27 @@ function getUserAndFollowInfo($pdo, $userId){
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
-function getUserByUserName($pdo, $userName){
+function getUserByUserName($pdo, $userName) {
     $sql = 
         "SELECT 
             user.userId,
             user.userName,
+            user.iconPath,
             (SELECT COUNT(whisper.whisperNo) FROM whisper WHERE whisper.userId = user.userId) AS whisperCount,
             (SELECT COUNT(follow.followUserId) FROM follow WHERE follow.userId = user.userId) AS followCount, -- số người mình follow
             (SELECT COUNT(follow.userId) FROM follow WHERE follow.followUserId = user.userId) AS followerCount -- số người follow mình
-            FROM 
-        user
-    WHERE
-        user.userName LIKE :userName
-    ";
+        FROM 
+            user
+        WHERE
+            user.userName LIKE :userName
+        ";
     $stmt = $pdo->prepare($sql);
     $userName = '%' . $userName . '%';
     $stmt->bindParam(':userName', $userName); 
     $stmt->execute();    
-    return  $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
 
 function getWhisperByContent($pdo, $content) {
     $Sql = 
@@ -274,6 +281,7 @@ function getWhisperByContent($pdo, $content) {
             whisper.whisperNo, 
             whisper.userId, 
             user.userName, 
+            user.iconPath,
             whisper.postDate, 
             whisper.content, 
             COALESCE(goodCounts.goodCount, 0) AS goodCount
@@ -295,5 +303,6 @@ function getWhisperByContent($pdo, $content) {
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
 
 ?> 
