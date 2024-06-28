@@ -7,6 +7,7 @@ data class Whisper(
     val postDate: String,
     val content: String,
     var goodCount: Int,
-    var goodFlg: Boolean
+    var goodFlg: Boolean,
+    val iconPath : String
 )
 

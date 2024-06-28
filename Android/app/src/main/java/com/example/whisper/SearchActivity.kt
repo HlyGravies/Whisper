@@ -18,7 +18,6 @@ import com.example.whisper.MyApplication.overMenu
 import com.example.whisper.adapter.UserListAdapter
 import com.example.whisper.model.Good
 import com.example.whisper.model.User
-import com.example.whisper.model.Whisper
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -124,11 +123,12 @@ class SearchActivity : AppCompatActivity() {
                             userName = user.getString("userName"),
                             whisperCount = user.getInt("whisperCount"),
                             followCount = user.getInt("followCount"),
-                            followerCount = user.getInt("followerCount")
+                            followerCount = user.getInt("followerCount"),
+                            iconPath = user.getString("iconPath")
                         )
                     )
                 }
-                val adapter = UserListAdapter(listUser)
+                val adapter = UserListAdapter(this,listUser)
                 searchRecycle.adapter = adapter
                 adapter.notifyDataSetChanged()
             } else if (section == "2") {
@@ -142,11 +142,12 @@ class SearchActivity : AppCompatActivity() {
                             userName = whisper.getString("userName"),
                             content = whisper.getString("content"),
                             postDate = whisper.getString("postDate"),
-                            goodCount = whisper.getInt("goodCount")
+                            goodCount = whisper.getInt("goodCount"),
+                            iconPath = whisper.getString("iconPath")
                         )
                     )
                 }
-                val adapter = GoodListAdapter(listWhisper)
+                val adapter = GoodListAdapter(this,listWhisper)
                 searchRecycle.adapter = adapter
                 adapter.notifyDataSetChanged()
             }

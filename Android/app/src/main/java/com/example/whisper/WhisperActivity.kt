@@ -53,6 +53,7 @@ class WhisperActivity : AppCompatActivity() {
                     put("userId", myApp.loginUserId)
                     put("content",content)
                 }.toString().toRequestBody(mediaType)
+
                 val request = Request.Builder()
                     .url(myApp.apiUrl+ "whisperAdd.php")
                     .post(requestBody)

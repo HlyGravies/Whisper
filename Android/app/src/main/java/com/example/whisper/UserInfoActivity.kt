@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.whisper.MyApplication.MyApplication
 import com.example.whisper.MyApplication.overMenu
 import com.example.whisper.model.Whisper
@@ -140,7 +141,8 @@ class UserInfoActivity : AppCompatActivity() {
                                     whisper.getString("postDate"),
                                     whisper.getString("content"),
                                     whisper.getInt("goodCount"),
-                                    whisper.getBoolean("goodFlg")
+                                    whisper.getBoolean("goodFlg"),
+                                    whisper.getString("iconPath")
                                 )
                             )
                         }
@@ -213,10 +215,17 @@ class UserInfoActivity : AppCompatActivity() {
                             runOnUiThread {
                                 userNameTx.text = userData.getString("userName")
                                 userProfileTx.text = userData.getString("profile")
-                                val userImageUrl = userData.getString("iconPath")
-                                Glide.with(this@UserInfoActivity)
-                                    .load(userImageUrl)
-                                    .into(userImageView)
+                                val iconPath = userData.getString("iconPath")
+                                if (iconPath.isNotEmpty()) {
+                                    myApp.iconPath = myApp.apiUrl + iconPath
+                                    Glide.with(this@UserInfoActivity)
+                                        .load(myApp.iconPath)
+                                        .diskCacheStrategy(DiskCacheStrategy.NONE) // Disable cache
+                                        .skipMemoryCache(true) // Skip memory cache
+                                        .placeholder(R.drawable.loading)
+                                        .error(R.drawable.avatar)
+                                        .into(userImageView)
+                                }
                             }
                         } else {
                             // Handle the case where userData is not present or null
@@ -328,7 +337,8 @@ class UserInfoActivity : AppCompatActivity() {
                                     whisper.getString("postDate"),
                                     whisper.getString("content"),
                                     whisper.getInt("goodCount"),
-                                    whisper.getBoolean("goodFlg")
+                                    whisper.getBoolean("goodFlg"),
+                                    whisper.getString("iconPath")
                                 )
                             )
 

@@ -5,5 +5,6 @@ data class User(
     val userName: String,
     val whisperCount: Int,
     val followCount: Int,
-    val followerCount: Int
+    val followerCount: Int,
+    val iconPath : String
 )

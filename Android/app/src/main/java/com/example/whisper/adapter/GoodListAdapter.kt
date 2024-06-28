@@ -1,5 +1,6 @@
 package com.example.whisper
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
@@ -9,15 +10,16 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.whisper.MyApplication.MyApplication
 import com.example.whisper.model.Good
 import com.example.whisper.model.Whisper
 
-class GoodListAdapter(
-    private val dataset: List<Good>,
+class GoodListAdapter(private val activity: Activity,
+                      private val dataset: List<Good>,
 ) : RecyclerView.Adapter<GoodListAdapter.GoodViewHolder>() {
 
-    // 1. ViewHolder (inner class)
-    // 1-1. Declare objects defined in the screen design as variables.
+
+    private val myApp = activity.application as MyApplication
     inner class GoodViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val userImage: ImageView = itemView.findViewById(R.id.userImage)
         val userName: TextView = itemView.findViewById(R.id.userNameText)
@@ -54,6 +56,11 @@ class GoodListAdapter(
         holder.userName.text = whisper.userName
         holder.whisperText.text = whisper.content
         holder.goodCount.text = whisper.goodCount.toString()
+        Glide.with(holder.userImage.context)
+            .load(myApp.apiUrl + whisper.iconPath)
+            .placeholder(R.drawable.loading)
+            .error(R.drawable.avatar)
+            .into(holder.userImage)
 
 
 //        holder.userImage.setOnClickListener {
@@ -64,8 +71,6 @@ class GoodListAdapter(
 //        }
     }
 
-    // 4. When getting the number of rows
-    // 4-1. Set the number of row lists as the return value.
     override fun getItemCount(): Int {
         return dataset.size
     }

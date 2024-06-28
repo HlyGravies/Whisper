@@ -1,5 +1,6 @@
 package com.example.whisper.adapter
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
@@ -8,12 +9,15 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.example.whisper.MyApplication.MyApplication
 import com.example.whisper.R
 import com.example.whisper.UserInfoActivity
 import com.example.whisper.model.User
 
-class UserListAdapter(private val dataset: MutableList<User>) : RecyclerView.Adapter<UserListAdapter.ViewHolder>(){
+class UserListAdapter(private val activity: Activity, private val dataset: MutableList<User>) : RecyclerView.Adapter<UserListAdapter.ViewHolder>(){
 
+    private val myApp = activity.application as MyApplication
     inner class ViewHolder(item :View) : RecyclerView.ViewHolder(item){
         val userNameText : TextView = item.findViewById(R.id.userNameText)
         val followCnt : TextView = item.findViewById(R.id.followCntText)
@@ -43,6 +47,11 @@ class UserListAdapter(private val dataset: MutableList<User>) : RecyclerView.Ada
         holder.userNameText.text = dataset[position].userName
         holder.followCnt.text = dataset[position].followCount.toString()
         holder.followerCnt.text = dataset[position].followerCount.toString()
+        Glide.with(holder.userImage.context)
+            .load(myApp.apiUrl + dataset[position].iconPath) // URL của hình ảnh
+            .placeholder(R.drawable.loading)
+            .error(R.drawable.avatar)
+            .into(holder.userImage)
     }
 
     override fun getItemCount(): Int {

@@ -24,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.whisper.MyApplication.MyApplication
 import com.example.whisper.MyApplication.overMenu
 import okhttp3.*
@@ -104,9 +105,13 @@ class UserEditActivity : AppCompatActivity() {
                             profileEdit.text = Editable.Factory.getInstance().newEditable(profile)
 
                             if (iconPath.isNotEmpty()) {
-                                val imageUrl = myApp.apiUrl + iconPath
+                                myApp.iconPath = myApp.apiUrl + iconPath
                                 Glide.with(this@UserEditActivity)
-                                    .load(imageUrl)
+                                    .load(myApp.iconPath)
+                                    .diskCacheStrategy(DiskCacheStrategy.NONE) // Disable cache
+                                    .skipMemoryCache(true)
+                                    .placeholder(R.drawable.loading)
+                                    .error(R.drawable.avatar)
                                     .into(userImage)
                             }
                         }
@@ -157,13 +162,14 @@ class UserEditActivity : AppCompatActivity() {
                 .addFormDataPart("userName", userName)
                 .addFormDataPart("profile", profile)
 
-            // Thêm ảnh vào form body nếu có chọn ảnh
+             //Thêm ảnh vào form body nếu có chọn ảnh
             selectedImageBitmap?.let {
                 val imageFile = createFileFromBitmap(it)
-                formBodyBuilder.addFormDataPart("image", imageFile.name, imageFile.asRequestBody("image/*".toMediaType()))
+                formBodyBuilder.addFormDataPart("iconPath", imageFile.name, imageFile.asRequestBody("image/*".toMediaType()))
             }
 
             val requestBody = formBodyBuilder.build()
+            Log.d("rrrrrrr", "onResponse: $requestBody")
             val request = Request.Builder()
                 .url(myApp.apiUrl + "userUpdate.php")
                 .post(requestBody)
@@ -178,6 +184,7 @@ class UserEditActivity : AppCompatActivity() {
 
                 override fun onResponse(call: Call, response: Response) {
                     val responseData = response.body?.string()
+                    Log.d("llll", "onResponse: $responseData")
                     val json = JSONObject(responseData)
 
                     if (json.has("error")) {
@@ -203,7 +210,7 @@ class UserEditActivity : AppCompatActivity() {
     }
 
     private fun createFileFromBitmap(bitmap: Bitmap): File {
-        val file = File(cacheDir, "upload_image.jpg")
+        val file = File(cacheDir, "${myApp.loginUserId}.jpg")
         val outputStream = FileOutputStream(file)
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
         outputStream.flush()

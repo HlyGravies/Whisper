@@ -3,7 +3,6 @@ package com.example.whisper
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -11,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.whisper.MyApplication.MyApplication
 import com.example.whisper.MyApplication.overMenu
 import com.example.whisper.adapter.FollowListAdapter
-import com.example.whisper.adapter.UserListAdapter
 import com.example.whisper.model.User
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
@@ -73,14 +71,15 @@ class FollowListActivity : AppCompatActivity() {
                                     userName = user.getString("userName"),
                                     whisperCount = user.getInt("whisperCount"),
                                     followCount = user.getInt("followCount"),
-                                    followerCount = user.getInt("followerCount")
+                                    followerCount = user.getInt("followerCount"),
+                                    iconPath = user.getString("iconPath")
                                 )
                             )
                         }
                         runOnUiThread {
                             val followRecycle = findViewById<RecyclerView>(R.id.followRecycler)
                             followRecycle.layoutManager = LinearLayoutManager(this@FollowListActivity)
-                            val adapter = FollowListAdapter(list)
+                            val adapter = FollowListAdapter(this@FollowListActivity,list)
                             followRecycle.adapter = adapter
                             adapter.notifyDataSetChanged()
                         }

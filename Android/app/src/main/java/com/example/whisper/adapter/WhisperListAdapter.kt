@@ -11,6 +11,7 @@ import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.whisper.MyApplication.MyApplication
 import com.example.whisper.model.Whisper
 import okhttp3.*
@@ -120,6 +121,12 @@ class WhisperListAdapter(
                 }
             })
         }
+
+        Glide.with(holder.userImage.context)
+            .load(myApp.apiUrl + whisper.iconPath) // URL của hình ảnh
+            .placeholder(R.drawable.loading)
+            .error(R.drawable.avatar)
+            .into(holder.userImage)
 
         // Set click listener for userImage
         holder.userImage.setOnClickListener {
