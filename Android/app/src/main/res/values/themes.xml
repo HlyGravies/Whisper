@@ -1,9 +1,10 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.Whisper" parent="Theme.Material3.DayNight">
+    <style name="Base.Theme.WhisperClient" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
+        <item name="android:windowBackground">@color/customColor</item>
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 
-    <style name="Theme.Whisper" parent="Base.Theme.Whisper" />
+    <style name="Theme.WhisperClient" parent="Base.Theme.WhisperClient" />
 </resources>
