@@ -4,15 +4,15 @@
 */
 
 function connect_db() {
-    // $host = "localhost";
-    // $database = "2024shisukai";
-    // $username = "root";
-    // $password = "root";
+    $host = "localhost";
+    $database = "2024shisukai";
+    $username = "root";
+    $password = "root";
 
-    $host = "localhost"; 
-    $database = "whisper24_a";
-    $username = "whisper24_a";
-    $password = "D8bJnWSX";
+    // $host = "localhost"; 
+    // $database = "whisper24_a";
+    // $username = "whisper24_a";
+    // $password = "D8bJnWSX";
 
     $dsn = "mysql:host={$host};dbname={$database};charset=utf8mb4";
     $options = [

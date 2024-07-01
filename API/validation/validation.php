@@ -143,4 +143,31 @@
         }   
     }
 
+    function isCommentIdExist($pdo, $commentId) {
+        $sql = "SELECT COUNT(*) FROM comment WHERE commentId = :commentId";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':commentId', $commentId);
+        $stmt->execute();
+        return $stmt->fetchColumn() > 0;
+    }
+    function isCommentOwner($pdo, $commentId, $userId) {
+        $sql = "SELECT COUNT(*) FROM comment WHERE commentId = :commentId AND userId = :userId";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':commentId', $commentId);
+        $stmt->bindParam(':userId', $userId);
+        $stmt->execute();
+        return $stmt->fetchColumn() > 0;
+    }
+    
+    function isWhisperOwner($pdo, $whisperNo, $userId) {
+        $sql = "SELECT COUNT(*) FROM whisper WHERE whisperNo = :whisperNo AND userId = :userId";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':whisperNo', $whisperNo);
+        $stmt->bindParam(':userId', $userId);
+        $stmt->execute();
+        return $stmt->fetchColumn() > 0;
+    }
+    
+    
+
 ?>
