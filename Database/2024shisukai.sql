@@ -137,7 +137,7 @@ CREATE TABLE `comment` (
   `whisperNo` bigint NOT NULL,
   `userId` varchar(30) NOT NULL,
   `content` varchar(256) NOT NULL,
-  `postDate` datetime NOT NULL,
+  `commentDate` datetime NOT NULL,
   PRIMARY KEY (`commentId`),
   KEY `comment_whisper_FK` (`whisperNo`),
   KEY `comment_user_FK` (`userId`),
