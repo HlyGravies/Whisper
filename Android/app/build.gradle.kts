@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.whisperclient"
+    namespace = "com.example.whisper"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.whisperclient"
+        applicationId = "com.example.whisper"
         minSdk = 24
         targetSdk = 33
         versionCode = 1

@@ -11,7 +11,7 @@
         android:name="android.hardware.camera"
         android:required="false" />
     <application
-        android:name=".MyApplication.MyApplication"
+        android:name="com.example.whisper.MyApplication.MyApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -19,7 +19,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Base.Theme.WhisperClient"
+        android:theme="@style/Base.Theme.Whisper"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
