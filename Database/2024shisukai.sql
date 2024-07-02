@@ -131,4 +131,31 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
+
+CREATE TABLE `comment` (
+  `commentId` bigint NOT NULL AUTO_INCREMENT,
+  `whisperNo` bigint NOT NULL,
+  `userId` varchar(30) NOT NULL,
+  `content` varchar(256) NOT NULL,
+  `postDate` datetime NOT NULL,
+  PRIMARY KEY (`commentId`),
+  KEY `comment_whisper_FK` (`whisperNo`),
+  KEY `comment_user_FK` (`userId`),
+  CONSTRAINT `comment_whisper_FK` FOREIGN KEY (`whisperNo`) REFERENCES `whisper` (`whisperNo`),
+  CONSTRAINT `comment_user_FK` FOREIGN KEY (`userId`) REFERENCES `user` (`userId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `comment_like` (
+  `userId` varchar(30) NOT NULL,
+  `commentId` bigint NOT NULL,
+  PRIMARY KEY (`userId`,`commentId`),
+  KEY `comment_like_comment_FK` (`commentId`),
+  CONSTRAINT `comment_like_user_FK` FOREIGN KEY (`userId`) REFERENCES `user` (`userId`),
+  CONSTRAINT `comment_like_comment_FK` FOREIGN KEY (`commentId`) REFERENCES `comment` (`commentId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+ALTER TABLE whisper ADD COLUMN commentCount INT DEFAULT 0;
+
 -- Dump completed on 2024-04-22 15:54:29
