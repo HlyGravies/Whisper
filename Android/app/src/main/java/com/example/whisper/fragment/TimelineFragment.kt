@@ -8,27 +8,34 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.whisper.MyApplication.MyApplication
 import com.example.whisper.WhisperListAdapter
 import com.example.whisper.databinding.FragmentTimelineBinding
 import com.example.whisper.model.Whisper
 import com.example.whisper.Interface.OnDataRefreshNeededListener
+import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaType
-
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class TimelineFragment : Fragment(), OnDataRefreshNeededListener {
 
     private var _binding: FragmentTimelineBinding? = null
     private val binding get() = _binding!!
-    private val myApp: MyApplication by lazy { activity?.application as MyApplication }
+
+    @Inject
+    lateinit var myApp: MyApplication
+
+    @Inject
+    lateinit var client: OkHttpClient
+
+    @Inject
+    lateinit var mediaType: MediaType
+
     private lateinit var adapter: WhisperListAdapter
     private var isRefreshing = false
 
@@ -37,8 +44,14 @@ class TimelineFragment : Fragment(), OnDataRefreshNeededListener {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentTimelineBinding.inflate(inflater, container, false)
-        val view = binding.root
 
+        setupUI()
+        getTimelineInfoApiCall() // Load initial data
+
+        return binding.root
+    }
+
+    private fun setupUI() {
         binding.swipeRefreshLayout.setOnRefreshListener {
             isRefreshing = true
             getTimelineInfoApiCall()
@@ -47,11 +60,6 @@ class TimelineFragment : Fragment(), OnDataRefreshNeededListener {
         binding.timelineRecycle.layoutManager = LinearLayoutManager(activity)
         adapter = WhisperListAdapter(requireActivity(), mutableListOf(), myApp.loginUserId, this@TimelineFragment)
         binding.timelineRecycle.adapter = adapter
-
-
-        getTimelineInfoApiCall() // Load initial data
-
-        return view
     }
 
     override fun onDataRefreshNeeded() {
@@ -65,11 +73,10 @@ class TimelineFragment : Fragment(), OnDataRefreshNeededListener {
     }
 
     private fun getTimelineInfoApiCall() {
-        val client = OkHttpClient()
-        val mediaType = "application/json; charset=utf-8".toMediaType()
         val requestBody = JSONObject().apply {
             put("userId", myApp.loginUserId)
         }.toString().toRequestBody(mediaType)
+
         val request = Request.Builder()
             .url("${myApp.apiUrl}timelineInfo.php")
             .post(requestBody)
@@ -83,6 +90,7 @@ class TimelineFragment : Fragment(), OnDataRefreshNeededListener {
                         binding.swipeRefreshLayout.isRefreshing = false
                         isRefreshing = false
                     }
+                    binding.progressBar.visibility = View.GONE
                 }
             }
 
