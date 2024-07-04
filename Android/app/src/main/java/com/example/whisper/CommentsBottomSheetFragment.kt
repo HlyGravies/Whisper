@@ -1,21 +1,18 @@
 package com.example.whisper
 
+import android.content.Intent
 import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.whisper.MyApplication.MyApplication
 import com.example.whisper.adapter.CommentsAdapter
+import com.example.whisper.databinding.FragmentCommentsBottomSheetBinding
 import com.example.whisper.model.Comment
-import com.example.whisper.R
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import okhttp3.*
@@ -27,16 +24,13 @@ import java.io.IOException
 
 class CommentsBottomSheetFragment : BottomSheetDialogFragment() {
     private lateinit var myApp: MyApplication
-    private lateinit var commentsRecyclerView: RecyclerView
-    private lateinit var commentEditText: EditText
-    private lateinit var postCommentButton: Button
+    private lateinit var binding: FragmentCommentsBottomSheetBinding
     private lateinit var commentsAdapter: CommentsAdapter
-    private lateinit var closebtn: ImageView
     private var whisperNo: Long? = null
     internal val commentsList = mutableListOf<Comment>()
 
     companion object {
-        const val WHISPER_NO = ""
+        const val WHISPER_NO = "whisperNo"
 
         fun newInstance(whisperNo: Long): CommentsBottomSheetFragment {
             val fragment = CommentsBottomSheetFragment()
@@ -64,31 +58,28 @@ class CommentsBottomSheetFragment : BottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         myApp = activity?.application as MyApplication
-        val view = inflater.inflate(R.layout.fragment_comments_bottom_sheet, container, false)
-        commentsRecyclerView = view.findViewById(R.id.commentsRecyclerView)
-        commentEditText = view.findViewById(R.id.commentEditText)
-        postCommentButton = view.findViewById(R.id.postCommentButton)
-        closebtn = view.findViewById(R.id.close_button)
+        binding = FragmentCommentsBottomSheetBinding.inflate(inflater, container, false)
 
-        commentsRecyclerView.layoutManager = LinearLayoutManager(context)
-        commentsAdapter = CommentsAdapter(this ,requireActivity(),commentsList)
-        commentsRecyclerView.adapter = commentsAdapter
+        binding.commentsRecyclerView.layoutManager = LinearLayoutManager(context)
+        commentsAdapter = CommentsAdapter(this, requireActivity(), commentsList)
+        binding.commentsRecyclerView.adapter = commentsAdapter
 
         whisperNo = arguments?.getLong(WHISPER_NO)
 
         loadComments()
 
-        postCommentButton.setOnClickListener {
+        binding.postCommentButton.setOnClickListener {
             postComment()
         }
-        closebtn.setOnClickListener {
+        binding.closeButton.setOnClickListener {
+//            val intent = Intent(activity, MainActivity::class.java)
+//            startActivity(intent)
             dismiss()
         }
 
-
-        return view
+        return binding.root
     }
 
     internal fun loadComments() {
@@ -135,7 +126,7 @@ class CommentsBottomSheetFragment : BottomSheetDialogFragment() {
                     }
                 } catch (e: JSONException) {
                     activity?.runOnUiThread {
-                        Toast.makeText(context, "LoadComment Error parsing the response", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, "Error parsing the response", Toast.LENGTH_LONG).show()
                     }
                 }
             }
@@ -143,7 +134,7 @@ class CommentsBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     private fun postComment() {
-        val commentText = commentEditText.text.toString()
+        val commentText = binding.commentEditText.text.toString()
         if (commentText.isBlank()) return
 
         val client = OkHttpClient()

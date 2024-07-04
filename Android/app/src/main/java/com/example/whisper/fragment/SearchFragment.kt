@@ -15,18 +15,24 @@ import com.example.whisper.databinding.FragmentSearchBinding
 import com.example.whisper.model.Good
 import com.example.whisper.model.User
 import com.google.android.material.tabs.TabLayout
+import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class SearchFragment : Fragment() {
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
-    private val myApp: MyApplication by lazy { activity?.application as MyApplication }
-
+    @Inject
+    lateinit var myApp: MyApplication
+    @Inject
+    lateinit var client: OkHttpClient
+    @Inject
+    lateinit var mediaType: MediaType
     private var selectedSection: String = "1" // Default to "User" tab
 
     override fun onCreateView(
@@ -34,44 +40,11 @@ class SearchFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
-        val view = binding.root
 
-        // Thêm các tab vào TabLayout
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("User"))
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Whisper"))
+        setupTabs()
+        setupSearchButton()
 
-        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab) {
-                selectedSection = when (tab.position) {
-                    0 -> "1" // User tab
-                    1 -> "2" // Whisper tab
-                    else -> "1"
-                }
-                val query = binding.searchEdit.text.toString()
-                if (query.isNotEmpty()) {
-                    fetchSearchResults(selectedSection, query)
-                }
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab) {}
-            override fun onTabReselected(tab: TabLayout.Tab) {
-                val query = binding.searchEdit.text.toString()
-                if (query.isNotEmpty()) {
-                    fetchSearchResults(selectedSection, query)
-                }
-            }
-        })
-
-        binding.searchButton.setOnClickListener {
-            val query = binding.searchEdit.text.toString()
-            if (query.isEmpty()) {
-                Toast.makeText(activity, "Please enter search text.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            fetchSearchResults(selectedSection, query)
-        }
-
-        return view
+        return binding.root
     }
 
     override fun onDestroyView() {
@@ -79,13 +52,46 @@ class SearchFragment : Fragment() {
         _binding = null
     }
 
+    private fun setupTabs() {
+        binding.tabLayout.apply {
+            addTab(newTab().setText("User"))
+            addTab(newTab().setText("Whisper"))
+            addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                override fun onTabSelected(tab: TabLayout.Tab) {
+                    selectedSection = if (tab.position == 0) "1" else "2"
+                    val query = binding.searchEdit.text.toString()
+                    if (query.isNotEmpty()) {
+                        fetchSearchResults(selectedSection, query)
+                    }
+                }
+                override fun onTabUnselected(tab: TabLayout.Tab) {}
+                override fun onTabReselected(tab: TabLayout.Tab) {
+                    val query = binding.searchEdit.text.toString()
+                    if (query.isNotEmpty()) {
+                        fetchSearchResults(selectedSection, query)
+                    }
+                }
+            })
+        }
+    }
+
+    private fun setupSearchButton() {
+        binding.searchButton.setOnClickListener {
+            val query = binding.searchEdit.text.toString()
+            if (query.isEmpty()) {
+                Toast.makeText(activity, "Please enter search text.", Toast.LENGTH_SHORT).show()
+            } else {
+                fetchSearchResults(selectedSection, query)
+            }
+        }
+    }
+
     private fun fetchSearchResults(section: String, query: String) {
-        val client = OkHttpClient()
-        val mediaType = "application/json; charset=utf-8".toMediaType()
         val requestBody = JSONObject().apply {
             put("section", section)
             put("string", query)
         }.toString().toRequestBody(mediaType)
+
         val request = Request.Builder()
             .url("${myApp.apiUrl}search.php")
             .post(requestBody)
@@ -148,7 +154,7 @@ class SearchFragment : Fragment() {
                 } else {
                     binding.errorText.visibility = View.GONE
                 }
-                val adapter = UserListAdapter(activity!!, listUser)
+                val adapter = UserListAdapter(requireActivity(), listUser)
                 binding.searchRecycle.adapter = adapter
                 adapter.notifyDataSetChanged()
             } else if (section == "2") {
@@ -175,9 +181,10 @@ class SearchFragment : Fragment() {
                 } else {
                     binding.errorText.visibility = View.GONE
                 }
-                val adapter = GoodListAdapter(activity!!, listWhisper)
+                val adapter = GoodListAdapter(requireActivity(), listWhisper)
                 binding.searchRecycle.adapter = adapter
                 adapter.notifyDataSetChanged()
             }
         }
-    }}
+    }
+}

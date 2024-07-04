@@ -1,42 +1,39 @@
 package com.example.whisper.adapter
 
 import android.app.Activity
+import android.content.Intent
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.PopupMenu
-import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.whisper.CommentsBottomSheetFragment
 import com.example.whisper.MyApplication.MyApplication
 import com.example.whisper.R
+import com.example.whisper.UserInfoActivity
+import com.example.whisper.databinding.RecycleCommentBinding
 import com.example.whisper.model.Comment
-import okhttp3.Call
-import okhttp3.Callback
+import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 
-class CommentsAdapter(private val fragment: CommentsBottomSheetFragment, private val activity: Activity, private val comments: List<Comment>) :
-    RecyclerView.Adapter<CommentsAdapter.CommentViewHolder>() {
+class CommentsAdapter(
+    private val fragment: CommentsBottomSheetFragment,
+    private val activity: Activity,
+    private val comments: List<Comment>
+) : RecyclerView.Adapter<CommentsAdapter.CommentViewHolder>() {
 
     private val myApp = activity.application as MyApplication
-    inner class CommentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val userImage: ImageView = itemView.findViewById(R.id.userImage)
-        val userName: TextView = itemView.findViewById(R.id.userNameText)
-        val commentText: TextView = itemView.findViewById(R.id.cmtText)
-        val dotImage: ImageView = itemView.findViewById(R.id.dotImage)
+
+    inner class CommentViewHolder(val binding: RecycleCommentBinding) : RecyclerView.ViewHolder(binding.root) {
 
         init {
-            dotImage.setOnClickListener { view ->
+            binding.dotImage.setOnClickListener { view ->
                 val position = adapterPosition
                 val comment = comments[position]
 
@@ -76,15 +73,13 @@ class CommentsAdapter(private val fragment: CommentsBottomSheetFragment, private
                 popup.show()
             }
         }
-
     }
 
     private fun reportComment(whisperNo: Any) {
-        TODO("Not yet implemented")
+        // TODO: Implement report comment functionality
     }
 
     private fun deleteComment(whisperNo: Long, commentId: Long, userId: String) {
-
         val client = OkHttpClient()
         val mediaType = "application/json; charset=utf-8".toMediaType()
         val requestBody = JSONObject().apply {
@@ -129,15 +124,25 @@ class CommentsAdapter(private val fragment: CommentsBottomSheetFragment, private
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.recycle_comment, parent, false)
-        return CommentViewHolder(view)
+        val binding = RecycleCommentBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return CommentViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: CommentViewHolder, position: Int) {
         val comment = comments[position]
-        holder.userName.text = comment.userName
-        holder.commentText.text = comment.content
-        Glide.with(holder.itemView.context).load(myApp.apiUrl + comment.iconPath).into(holder.userImage)
+        holder.binding.userNameText.text = comment.userName
+        holder.binding.cmtText.text = comment.content
+        Glide.with(holder.itemView.context)
+            .load(myApp.apiUrl + comment.iconPath)
+            .diskCacheStrategy(DiskCacheStrategy.NONE) // Disable cache
+            .skipMemoryCache(true)
+            .into(holder.binding.userImage)
+        holder.binding.userImage.setOnClickListener {
+            val intent = Intent(activity, UserInfoActivity::class.java).apply {
+                putExtra("userId", comment.userId)
+            }
+            activity.startActivity(intent)
+        }
     }
 
     override fun getItemCount() = comments.size

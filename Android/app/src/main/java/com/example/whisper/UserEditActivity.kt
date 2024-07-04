@@ -5,19 +5,10 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
-import android.util.Base64
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -26,44 +17,29 @@ import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.whisper.MyApplication.MyApplication
+import com.example.whisper.databinding.ActivityUserEditBinding
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
 class UserEditActivity : AppCompatActivity() {
-    private lateinit var userNameEdit: EditText
-    private lateinit var profileEdit: EditText
-    private lateinit var changeButton: Button
-    private lateinit var cancelButton: Button
-    private lateinit var userImage: ImageView
-    private lateinit var userIdText: TextView
+    private lateinit var binding: ActivityUserEditBinding
     private lateinit var myApp: MyApplication
-    private var selectedImage: Uri? = null
     private var selectedImageBitmap: Bitmap? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_user_edit)
+        binding = ActivityUserEditBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        initViews()
+        myApp = application as MyApplication
         requestUserInfo()
         setupListeners()
-    }
-
-    private fun initViews() {
-        userNameEdit = findViewById(R.id.userNameEdit)
-        profileEdit = findViewById(R.id.profileEdit)
-        changeButton = findViewById(R.id.changeButton)
-        cancelButton = findViewById(R.id.cancelButton)
-        userImage = findViewById(R.id.userImage)
-        userIdText = findViewById(R.id.userIdText)
-        myApp = application as MyApplication
     }
 
     private fun requestUserInfo() {
@@ -97,9 +73,9 @@ class UserEditActivity : AppCompatActivity() {
                             val profile = userData.getString("profile")
                             val iconPath = userData.getString("iconPath")
 
-                            userIdText.text = myApp.loginUserId
-                            userNameEdit.text = Editable.Factory.getInstance().newEditable(userName)
-                            profileEdit.text = Editable.Factory.getInstance().newEditable(profile)
+                            binding.userIdText.text = myApp.loginUserId
+                            binding.userNameEdit.text = Editable.Factory.getInstance().newEditable(userName)
+                            binding.profileEdit.text = Editable.Factory.getInstance().newEditable(profile)
 
                             if (iconPath.isNotEmpty()) {
                                 myApp.iconPath = myApp.apiUrl + iconPath
@@ -109,7 +85,7 @@ class UserEditActivity : AppCompatActivity() {
                                     .skipMemoryCache(true)
                                     .placeholder(R.drawable.loading)
                                     .error(R.drawable.avatar)
-                                    .into(userImage)
+                                    .into(binding.userImage)
                             }
                         }
                     }
@@ -123,10 +99,10 @@ class UserEditActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
-        userImage.setOnClickListener {
-            val options = arrayOf("Thư viện", "Máy ảnh", "Hủy")
+        binding.userImage.setOnClickListener {
+            val options = arrayOf("Gallery", "Camera", "Cancel")
             val builder = AlertDialog.Builder(this)
-            builder.setTitle("Chọn hình ảnh từ:")
+            builder.setTitle("Select image from:")
             builder.setItems(options) { dialog, which ->
                 when (which) {
                     0 -> {
@@ -148,62 +124,65 @@ class UserEditActivity : AppCompatActivity() {
             builder.show()
         }
 
-        changeButton.setOnClickListener {
-            val client = OkHttpClient()
-            val userName = userNameEdit.text.toString()
-            val profile = profileEdit.text.toString()
-
-            val formBodyBuilder = MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("userId", myApp.loginUserId)
-                .addFormDataPart("userName", userName)
-                .addFormDataPart("profile", profile)
-
-             //Thêm ảnh vào form body nếu có chọn ảnh
-            selectedImageBitmap?.let {
-                val imageFile = createFileFromBitmap(it)
-                formBodyBuilder.addFormDataPart("iconPath", imageFile.name, imageFile.asRequestBody("image/*".toMediaType()))
-            }
-
-            val requestBody = formBodyBuilder.build()
-            Log.d("rrrrrrr", "onResponse: $requestBody")
-            val request = Request.Builder()
-                .url(myApp.apiUrl + "userUpdate.php")
-                .post(requestBody)
-                .build()
-
-            client.newCall(request).enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    runOnUiThread {
-                        Toast.makeText(this@UserEditActivity, e.message, Toast.LENGTH_LONG).show()
-                    }
-                }
-
-                override fun onResponse(call: Call, response: Response) {
-                    val responseData = response.body?.string()
-                    Log.d("llll", "onResponse: $responseData")
-                    val json = JSONObject(responseData)
-
-                    if (json.has("error")) {
-                        runOnUiThread {
-                            Toast.makeText(this@UserEditActivity, json.getString("error"), Toast.LENGTH_LONG).show()
-                        }
-                    } else {
-                        runOnUiThread {
-                            // Start a new activity and finish the current one
-                            val intent = Intent(this@UserEditActivity, UserInfoActivity::class.java)
-                            intent.putExtra("userId", myApp.loginUserId)
-                            startActivity(intent)
-                            finish()
-                        }
-                    }
-                }
-            })
+        binding.changeButton.setOnClickListener {
+            updateUserInfo()
         }
 
-        cancelButton.setOnClickListener {
+        binding.cancelButton.setOnClickListener {
             finish()
         }
+    }
+
+    private fun updateUserInfo() {
+        val client = OkHttpClient()
+        val userName = binding.userNameEdit.text.toString()
+        val profile = binding.profileEdit.text.toString()
+
+        val formBodyBuilder = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("userId", myApp.loginUserId)
+            .addFormDataPart("userName", userName)
+            .addFormDataPart("profile", profile)
+
+        // Add image to form body if selected
+        selectedImageBitmap?.let {
+            val imageFile = createFileFromBitmap(it)
+            formBodyBuilder.addFormDataPart("iconPath", imageFile.name, imageFile.asRequestBody("image/*".toMediaType()))
+        }
+
+        val requestBody = formBodyBuilder.build()
+        Log.d("UpdateRequest", "Request: $requestBody")
+        val request = Request.Builder()
+            .url(myApp.apiUrl + "userUpdate.php")
+            .post(requestBody)
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                runOnUiThread {
+                    Toast.makeText(this@UserEditActivity, e.message, Toast.LENGTH_LONG).show()
+                }
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val responseData = response.body?.string()
+                Log.d("UpdateResponse", "Response: $responseData")
+                val json = JSONObject(responseData)
+
+                if (json.has("error")) {
+                    runOnUiThread {
+                        Toast.makeText(this@UserEditActivity, json.getString("error"), Toast.LENGTH_LONG).show()
+                    }
+                } else {
+                    runOnUiThread {
+                        val intent = Intent(this@UserEditActivity, UserInfoActivity::class.java)
+                        intent.putExtra("userId", myApp.loginUserId)
+                        startActivity(intent)
+                        finish()
+                    }
+                }
+            }
+        })
     }
 
     private fun createFileFromBitmap(bitmap: Bitmap): File {
@@ -215,7 +194,6 @@ class UserEditActivity : AppCompatActivity() {
         return file
     }
 
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
@@ -223,15 +201,13 @@ class UserEditActivity : AppCompatActivity() {
                 PICK_IMAGE_REQUEST_CODE -> {
                     val selectedImageUri = data?.data
                     if (selectedImageUri != null) {
-                        userImage.setImageURI(selectedImageUri)
-                        // Convert the selected image to Bitmap
+                        binding.userImage.setImageURI(selectedImageUri)
                         selectedImageBitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, selectedImageUri)
                     }
                 }
                 CAPTURE_IMAGE_REQUEST_CODE -> {
                     val photo = data?.extras?.get("data") as Bitmap
-                    userImage.setImageBitmap(photo)
-                    // Save the captured image Bitmap for later use
+                    binding.userImage.setImageBitmap(photo)
                     selectedImageBitmap = photo
                 }
             }
@@ -245,7 +221,7 @@ class UserEditActivity : AppCompatActivity() {
                 val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 startActivityForResult(intent, CAPTURE_IMAGE_REQUEST_CODE)
             } else {
-                Toast.makeText(this, "Không cấp quyền thì không thể chụp ảnh cập nhật thông tin", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Permission denied to capture image", Toast.LENGTH_LONG).show()
             }
         }
     }
