@@ -1,6 +1,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -54,4 +56,6 @@ dependencies {
     implementation ("androidx.navigation:navigation-ui-ktx:2.4.1")
     implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
+    implementation("com.google.dagger:hilt-android:2.48") // Thêm dependency Hilt
+    kapt("com.google.dagger:hilt-android-compiler:2.48")
 }
