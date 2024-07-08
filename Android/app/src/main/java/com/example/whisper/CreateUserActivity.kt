@@ -116,6 +116,8 @@ class CreateUserActivity : AppCompatActivity() {
                             }
                         } else {
                             runOnUiThread {
+                                val userId = jsonResponse.getJSONObject("userData").getString("userId")
+                                myApp.loginUserId = userId
                                 val intent = Intent(this@CreateUserActivity, MainActivity::class.java)
                                 startActivity(intent)
                                 finish()

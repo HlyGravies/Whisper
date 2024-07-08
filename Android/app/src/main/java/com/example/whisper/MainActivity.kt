@@ -34,4 +34,15 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
     }
+    fun updateNotificationBadge(count: Int) {
+        if (count > 0) {
+            // Show badge with count
+            val badge = binding.bottomNavigationView.getOrCreateBadge(R.id.notificationFragment)
+            badge.number = count
+            badge.isVisible = true
+        } else {
+            // Hide badge
+            binding.bottomNavigationView.removeBadge(R.id.notificationFragment)
+        }
+    }
 }

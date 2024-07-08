@@ -1,6 +1,10 @@
 package com.example.whisper.fragment
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,12 +15,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.whisper.GoodListAdapter
 import com.example.whisper.MyApplication.MyApplication
 import com.example.whisper.adapter.UserListAdapter
+import com.example.whisper.adapter.SearchAdapter
 import com.example.whisper.databinding.FragmentSearchBinding
 import com.example.whisper.model.Good
 import com.example.whisper.model.User
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONException
 import org.json.JSONObject
@@ -31,9 +37,12 @@ class SearchFragment : Fragment() {
     lateinit var myApp: MyApplication
     @Inject
     lateinit var client: OkHttpClient
-    @Inject
-    lateinit var mediaType: MediaType
+    private val mediaType = "application/json; charset=utf-8".toMediaType()
     private var selectedSection: String = "1" // Default to "User" tab
+    private var handler: Handler? = null
+    private var queryRunnable: Runnable? = null
+    private val debouncePeriod: Long = 300 // milliseconds
+    private lateinit var searchAdapter: SearchAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,8 +50,12 @@ class SearchFragment : Fragment() {
     ): View? {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
 
+        searchAdapter = SearchAdapter(requireContext(), mutableListOf())
+        binding.searchEdit.setAdapter(searchAdapter)
+
         setupTabs()
         setupSearchButton()
+        setupSearchEdit()
 
         return binding.root
     }
@@ -86,6 +99,35 @@ class SearchFragment : Fragment() {
         }
     }
 
+    private fun setupSearchEdit() {
+        binding.searchEdit.setOnItemClickListener { _, _, position, _ ->
+            val suggestion = searchAdapter.getItem(position)
+            suggestion?.let {
+                fetchSearchResults(selectedSection, it)
+            }
+        }
+
+        binding.searchEdit.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (handler == null) {
+                    handler = Handler(Looper.getMainLooper())
+                }
+                if (queryRunnable != null) {
+                    handler!!.removeCallbacks(queryRunnable!!)
+                }
+                queryRunnable = Runnable {
+                    if (s != null && s.length >= 1) {
+                        fetchSearchSuggestions(s.toString())
+                    }
+                }
+                handler!!.postDelayed(queryRunnable!!, debouncePeriod)
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+    }
+
     private fun fetchSearchResults(section: String, query: String) {
         val requestBody = JSONObject().apply {
             put("section", section)
@@ -123,6 +165,55 @@ class SearchFragment : Fragment() {
                 }
             }
         })
+    }
+
+    private fun fetchSearchSuggestions(query: String) {
+        val requestBody = JSONObject().apply {
+            put("query", query)
+            put("page", 1) // Request the first page of suggestions
+        }.toString().toRequestBody(mediaType)
+        val request = Request.Builder()
+            .url("${myApp.apiUrl}searchSuggestions.php")
+            .post(requestBody)
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                activity?.runOnUiThread {
+                    Toast.makeText(activity, "Request failed: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val responseBody = response.body?.string()
+                Log.d("SearchFragment", "onResponse: $responseBody")
+                try {
+                    val jsonResponse = JSONObject(responseBody)
+                    if (jsonResponse.has("error")) {
+                        activity?.runOnUiThread {
+                            Toast.makeText(activity, jsonResponse.getString("error"), Toast.LENGTH_LONG).show()
+                        }
+                    } else {
+                        val suggestions = jsonResponse.getJSONArray("suggestions")
+                        val suggestionList = List(suggestions.length()) { index ->
+                            suggestions.getString(index)
+                        }
+                        updateSearchSuggestions(suggestionList)
+                    }
+                } catch (e: JSONException) {
+                    activity?.runOnUiThread {
+                        Toast.makeText(activity, "Error parsing the response", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        })
+    }
+
+    private fun updateSearchSuggestions(suggestions: List<String>) {
+        activity?.runOnUiThread {
+            searchAdapter.setSuggestions(suggestions)
+            binding.searchEdit.showDropDown()
+        }
     }
 
     private fun updateUI(json: JSONObject, section: String) {

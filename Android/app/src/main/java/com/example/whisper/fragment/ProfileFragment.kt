@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -139,7 +138,7 @@ class ProfileFragment : Fragment(), OnDataRefreshNeededListener {
 
         okHttpClient.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                showToast("Error: ${e.message}")
+                showErrorText("Error: ${e.message}")
             }
 
             override fun onResponse(call: Call, response: Response) {
@@ -166,7 +165,7 @@ class ProfileFragment : Fragment(), OnDataRefreshNeededListener {
 
         okHttpClient.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                showToast("Error: ${e.message}")
+                showErrorText("Error: ${e.message}")
             }
 
             override fun onResponse(call: Call, response: Response) {
@@ -174,13 +173,13 @@ class ProfileFragment : Fragment(), OnDataRefreshNeededListener {
                 try {
                     val jsonResponse = JSONObject(responseBody)
                     if (jsonResponse.has("error")) {
-                        showToast(jsonResponse.getString("error"))
+                        showErrorText(jsonResponse.getString("error"))
                     } else {
                         val userData = jsonResponse.getJSONObject("userData")
                         updateUserInfo(userData)
                     }
                 } catch (e: JSONException) {
-                    showToast("UserInfo Error parsing the response")
+                    showErrorText("UserInfo Error parsing the response")
                 }
             }
         })
@@ -197,7 +196,7 @@ class ProfileFragment : Fragment(), OnDataRefreshNeededListener {
 
         okHttpClient.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                showToast("Error: ${e.message}")
+                showErrorText("Error: ${e.message}")
             }
 
             override fun onResponse(call: Call, response: Response) {
@@ -205,13 +204,13 @@ class ProfileFragment : Fragment(), OnDataRefreshNeededListener {
                 try {
                     val jsonResponse = JSONObject(responseBody)
                     if (jsonResponse.has("error")) {
-                        showToast(jsonResponse.getString("error"))
+                        showErrorText(jsonResponse.getString("error"))
                     } else {
                         val data = jsonResponse.getJSONObject("data")
                         updateFollowCounts(data.getJSONArray("followList").length(), data.getJSONArray("followerList").length())
                     }
                 } catch (e: JSONException) {
-                    showToast("Follow Error parsing the response")
+                    showErrorText("Follow Error parsing the response")
                 }
             }
         })
@@ -229,7 +228,7 @@ class ProfileFragment : Fragment(), OnDataRefreshNeededListener {
 
         okHttpClient.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                showToast("Error: ${e.message}")
+                showErrorText("Error: ${e.message}")
             }
 
             override fun onResponse(call: Call, response: Response) {
@@ -251,12 +250,12 @@ class ProfileFragment : Fragment(), OnDataRefreshNeededListener {
         try {
             val jsonResponse = JSONObject(responseBody)
             if (jsonResponse.getJSONObject("data").isNull("whisperList")) {
-                showToast(emptyMessage)
+                showErrorText(emptyMessage)
             } else {
                 onSuccess(jsonResponse)
             }
         } catch (e: JSONException) {
-            showToast("Error parsing the response")
+            showErrorText("Error parsing the response")
             Log.e("JSON Parsing Error", "Error parsing the response", e)
         }
     }
@@ -273,7 +272,8 @@ class ProfileFragment : Fragment(), OnDataRefreshNeededListener {
     private fun updateUserInfo(userData: JSONObject) {
         activity?.runOnUiThread {
             binding.userNameText.text = userData.getString("userName")
-            binding.profileText.text = userData.getString("profile")
+            val profile = userData.optString("profile", "")
+            binding.profileText.text = if (profile == "null") "" else profile
             val iconPath = userData.getString("iconPath")
             if (iconPath.isNotEmpty()) {
                 myApp.iconPath = myApp.apiUrl + iconPath
@@ -295,9 +295,9 @@ class ProfileFragment : Fragment(), OnDataRefreshNeededListener {
         }
     }
 
-    private fun showToast(message: String) {
+    private fun showErrorText(message: String) {
         activity?.runOnUiThread {
-            Toast.makeText(myApp, message, Toast.LENGTH_LONG).show()
+            binding.errorText.text = message
         }
     }
 

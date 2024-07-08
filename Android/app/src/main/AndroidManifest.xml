@@ -40,6 +40,9 @@
             android:name=".CreateUserActivity"
             android:exported="false" />
         <activity
+            android:name=".WhisperDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".UserInfoActivity"
             android:exported="false" />
         <activity

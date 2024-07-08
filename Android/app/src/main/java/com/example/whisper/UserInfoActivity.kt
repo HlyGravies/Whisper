@@ -193,7 +193,8 @@ class UserInfoActivity : AppCompatActivity() , OnDataRefreshNeededListener {
                             val userData = jsonResponse.getJSONObject("userData")
                             runOnUiThread {
                                 binding.userNameText.text = userData.getString("userName")
-                                binding.profileText.text = userData.getString("profile")
+                                val profile = userData.optString("profile", "")
+                                binding.profileText.text = if (profile == "null") "" else profile
                                 val iconPath = userData.getString("iconPath")
                                 if (iconPath.isNotEmpty()) {
                                     myApp.iconPath = myApp.apiUrl + iconPath

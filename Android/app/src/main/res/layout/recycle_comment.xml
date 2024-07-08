@@ -22,14 +22,14 @@
             android:layout_marginTop="3dp"
             android:src="@drawable/ic_dot" />
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/userImage"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_alignParentStart="true"
-
             android:layout_alignParentTop="true"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"
+            card_view:shapeAppearanceOverlay="@style/CircleImageView"/>
 
         <!-- User Name -->
         <TextView

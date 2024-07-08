@@ -3,6 +3,9 @@
     <style name="Base.Theme.Whisper" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <item name="android:windowBackground">@color/customColor</item>
+        <item name="android:statusBarColor">@color/customColor</item> <!-- Màu thanh trạng thái -->
+        <item name="android:navigationBarColor">@color/customColor</item>
+        <item name="android:windowLightStatusBar">true</item>
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 

@@ -4,5 +4,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="blue">#00ACEE</color>
     <color name="customColor">#EFEFEF</color>
+    <color name="notification_read">#FFFFFF</color> <!-- Màu nền cho thông báo đã đọc -->
+    <color name="notification_unread">#CACACA</color> <!-- Màu nền cho thông báo chưa đọc -->
+
 
 </resources>

@@ -1,5 +1,6 @@
 package com.example.whisper
 
+import android.app.Dialog
 import android.content.Intent
 import android.content.res.Resources
 import android.os.Bundle
@@ -7,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.whisper.MyApplication.MyApplication
@@ -14,6 +16,7 @@ import com.example.whisper.adapter.CommentsAdapter
 import com.example.whisper.databinding.FragmentCommentsBottomSheetBinding
 import com.example.whisper.model.Comment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
@@ -41,6 +44,12 @@ class CommentsBottomSheetFragment : BottomSheetDialogFragment() {
         }
     }
 
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
+        dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        return dialog
+    }
+
     override fun onStart() {
         super.onStart()
         val dialog = dialog
@@ -49,9 +58,11 @@ class CommentsBottomSheetFragment : BottomSheetDialogFragment() {
             val behavior = BottomSheetBehavior.from(bottomSheet!!)
             val layoutParams = bottomSheet.layoutParams
             val windowHeight = Resources.getSystem().displayMetrics.heightPixels
-            layoutParams?.height = windowHeight * 90 / 100
+            layoutParams?.height = windowHeight * 70 / 100
             bottomSheet.layoutParams = layoutParams
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
+            behavior.isFitToContents = true
+            behavior.skipCollapsed = true
         }
     }
 
@@ -159,6 +170,7 @@ class CommentsBottomSheetFragment : BottomSheetDialogFragment() {
             override fun onResponse(call: Call, response: Response) {
                 activity?.runOnUiThread {
                     commentsList.clear() // Clear the current list of comments
+                    binding.commentEditText.text.clear() // Clear the comment text field
                     loadComments() // Load the comments again
                 }
             }

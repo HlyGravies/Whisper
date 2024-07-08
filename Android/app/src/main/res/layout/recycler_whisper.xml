@@ -6,7 +6,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_margin="4dp"
     android:elevation="7dp"
-    card_view:cardCornerRadius="8dp">
+    card_view:cardCornerRadius="8dp"
+    android:id="@+id/cardView">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -15,13 +16,16 @@
 
         <ImageView
             android:id="@+id/dotImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="8dp"
             android:layout_marginTop="3dp"
-            android:src="@drawable/ic_dot" />
+            android:src="@drawable/ic_dot"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="dot menu" />
 
         <!-- User Name -->
         <com.google.android.material.imageview.ShapeableImageView
@@ -32,7 +36,10 @@
             card_view:shapeAppearanceOverlay="@style/CircleImageView"
             android:layout_alignParentTop="true"
             android:layout_marginStart="6dp"
-            android:layout_marginTop="17dp" />
+            android:layout_marginTop="17dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="userImage" />
 
         <TextView
             android:id="@+id/userNameText"
@@ -75,7 +82,9 @@
                 android:layout_centerVertical="true"
                 android:layout_marginStart="5dp"
                 android:background="@android:color/transparent"
-                android:src="@drawable/ic_star_placeholder" />
+                android:src="@drawable/ic_star_placeholder"
+                android:clickable="true"
+                android:focusable="true" />
             <TextView
                 android:id="@+id/goodCountText"
                 android:layout_width="wrap_content"
@@ -95,7 +104,9 @@
                 android:layout_centerVertical="true"
                 android:layout_toEndOf="@+id/goodCountText"
                 android:background="@android:color/transparent"
-                android:src="@drawable/ic_comment" />
+                android:src="@drawable/ic_comment"
+                android:clickable="true"
+                android:focusable="true" />
             <TextView
                 android:id="@+id/cmtCountText"
                 android:layout_width="wrap_content"

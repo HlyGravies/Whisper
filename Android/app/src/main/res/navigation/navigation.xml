@@ -16,6 +16,11 @@
         android:label="fragment_search"
         tools:layout="@layout/fragment_search"/>
     <fragment
+        android:id="@+id/notificationFragment"
+        android:name="com.example.whisper.fragment.NotificationFragment"
+        android:label="fragment_notification"
+        tools:layout="@layout/fragment_notification"/>
+    <fragment
         android:id="@+id/profileFragment"
         android:name="com.example.whisper.fragment.ProfileFragment"
         android:label="fragment_profile"

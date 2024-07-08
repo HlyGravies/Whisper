@@ -73,6 +73,14 @@ class WhisperListAdapter(
                 // Show the PopupMenu
                 popup.show()
             }
+            binding.cardView.setOnClickListener {
+                val position = adapterPosition
+                val whisper = whispers[position]
+                val intent = Intent(activity, WhisperDetailActivity::class.java).apply {
+                    putExtra("whisperNo", whisper.whisperNo)
+                }
+                activity.startActivity(intent)
+            }
         }
     }
 

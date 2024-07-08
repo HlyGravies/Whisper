@@ -23,7 +23,7 @@ import org.json.JSONObject
 import java.io.IOException
 
 class CommentsAdapter(
-    private val fragment: CommentsBottomSheetFragment,
+    private val fragment: CommentsBottomSheetFragment?,
     private val activity: Activity,
     private val comments: List<Comment>
 ) : RecyclerView.Adapter<CommentsAdapter.CommentViewHolder>() {
@@ -94,7 +94,7 @@ class CommentsAdapter(
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                fragment.activity?.runOnUiThread {
+                fragment?.activity?.runOnUiThread {
                     Toast.makeText(fragment.activity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
@@ -104,11 +104,11 @@ class CommentsAdapter(
                 try {
                     val jsonResponse = JSONObject(responseBody)
                     if (jsonResponse.has("error")) {
-                        fragment.activity?.runOnUiThread {
+                        fragment?.activity?.runOnUiThread {
                             Toast.makeText(fragment.activity, jsonResponse.getString("error"), Toast.LENGTH_LONG).show()
                         }
                     } else {
-                        fragment.activity?.runOnUiThread {
+                        fragment?.activity?.runOnUiThread {
                             // Refresh the comments list after deletion
                             fragment.commentsList.clear()
                             fragment.loadComments()
