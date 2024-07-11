@@ -12,17 +12,26 @@ import com.example.whisper.adapter.CommentsAdapter
 import com.example.whisper.databinding.ActivityWhisperDetailBinding
 import com.example.whisper.model.Comment
 import com.example.whisper.model.Whisper
+import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
-
+import javax.inject.Inject
+@AndroidEntryPoint
 class WhisperDetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityWhisperDetailBinding
-    private lateinit var myApp: MyApplication
+    @Inject
+    lateinit var myApp: MyApplication
+
+    @Inject
+    lateinit var client: OkHttpClient
+
+    @Inject
+    lateinit var mediaType: MediaType
     private var whisperNo: Int = 0
     private lateinit var commentsAdapter: CommentsAdapter
     private lateinit var commentList: MutableList<Comment>
@@ -33,7 +42,6 @@ class WhisperDetailActivity : AppCompatActivity() {
         binding = ActivityWhisperDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        myApp = applicationContext as MyApplication
         whisperNo = intent.getIntExtra("whisperNo", 0)
 
         setupCommentsRecyclerView()
@@ -78,8 +86,6 @@ class WhisperDetailActivity : AppCompatActivity() {
     }
 
     private fun fetchWhisperDetails() {
-        val client = OkHttpClient()
-        val mediaType = "application/json; charset=utf-8".toMediaType()
         val requestBody = JSONObject().apply {
             put("whisperNo", whisperNo)
             put("loginUserId", myApp.loginUserId)
@@ -147,7 +153,7 @@ class WhisperDetailActivity : AppCompatActivity() {
 
     private fun setupCommentsRecyclerView() {
         commentList = mutableListOf()
-        commentsAdapter = CommentsAdapter(null,this, commentList)
+        commentsAdapter = CommentsAdapter(null,this, commentList,client,myApp)
         binding.commentsRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.commentsRecyclerView.adapter = commentsAdapter
         fetchComments()
@@ -165,8 +171,6 @@ class WhisperDetailActivity : AppCompatActivity() {
     }
 
     private fun fetchComments() {
-        val client = OkHttpClient()
-        val mediaType = "application/json; charset=utf-8".toMediaType()
         val requestBody = JSONObject().apply {
             put("whisperNo", whisperNo)
         }.toString().toRequestBody(mediaType)
@@ -221,8 +225,6 @@ class WhisperDetailActivity : AppCompatActivity() {
     }
 
     private fun postComment(commentText: String) {
-        val client = OkHttpClient()
-        val mediaType = "application/json; charset=utf-8".toMediaType()
         val requestBody = JSONObject().apply {
             put("userId", myApp.loginUserId)
             put("whisperNo", whisperNo)
@@ -264,8 +266,6 @@ class WhisperDetailActivity : AppCompatActivity() {
     }
 
     private fun toggleLike() {
-        val client = OkHttpClient()
-        val mediaType = "application/json; charset=utf-8".toMediaType()
         val requestBody = JSONObject().apply {
             put("userId", myApp.loginUserId)
             put("whisperNo", whisperNo)
@@ -309,8 +309,6 @@ class WhisperDetailActivity : AppCompatActivity() {
     }
 
     private fun deleteWhisper(whisperNo: Int) {
-        val client = OkHttpClient()
-        val mediaType = "application/json; charset=utf-8".toMediaType()
         val requestBody = JSONObject().apply {
             put("whisperNo", whisperNo)
         }.toString().toRequestBody(mediaType)

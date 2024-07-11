@@ -9,22 +9,29 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.whisper.MyApplication.MyApplication
 import com.example.whisper.databinding.ActivityCreateUserBinding
+import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.io.IOException
-
+import javax.inject.Inject
+@AndroidEntryPoint
 class CreateUserActivity : AppCompatActivity() {
-    private lateinit var myApp: MyApplication
+    @Inject
+    lateinit var myApp: MyApplication
+
+    @Inject
+    lateinit var client: OkHttpClient
+
+    @Inject
+    lateinit var mediaType: MediaType
     private lateinit var binding: ActivityCreateUserBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCreateUserBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        myApp = application as MyApplication
 
         var isPassVisible = false
 
@@ -83,8 +90,6 @@ class CreateUserActivity : AppCompatActivity() {
     }
 
     private fun createUser(userName: String, userId: String, password: String) {
-        val client = OkHttpClient()
-        val mediaType = "application/json; charset=utf-8".toMediaType()
         val requestBody = JSONObject().apply {
             put("userName", userName)
             put("userId", userId)

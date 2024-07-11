@@ -1,7 +1,6 @@
 package com.example.whisper
 
 import android.app.Dialog
-import android.content.Intent
 import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
@@ -18,16 +17,30 @@ import com.example.whisper.model.Comment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class CommentsBottomSheetFragment : BottomSheetDialogFragment() {
-    private lateinit var myApp: MyApplication
-    private lateinit var binding: FragmentCommentsBottomSheetBinding
+
+    @Inject
+    lateinit var myApp: MyApplication
+
+    @Inject
+    lateinit var client: OkHttpClient
+
+    @Inject
+    lateinit var mediaType: MediaType
+
+    private var _binding: FragmentCommentsBottomSheetBinding? = null
+    private val binding get() = _binding!!
+
     private lateinit var commentsAdapter: CommentsAdapter
     private var whisperNo: Long? = null
     internal val commentsList = mutableListOf<Comment>()
@@ -70,11 +83,10 @@ class CommentsBottomSheetFragment : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        myApp = activity?.application as MyApplication
-        binding = FragmentCommentsBottomSheetBinding.inflate(inflater, container, false)
+        _binding = FragmentCommentsBottomSheetBinding.inflate(inflater, container, false)
 
         binding.commentsRecyclerView.layoutManager = LinearLayoutManager(context)
-        commentsAdapter = CommentsAdapter(this, requireActivity(), commentsList)
+        commentsAdapter = CommentsAdapter(this, requireActivity(), commentsList, client, myApp)
         binding.commentsRecyclerView.adapter = commentsAdapter
 
         whisperNo = arguments?.getLong(WHISPER_NO)
@@ -85,8 +97,6 @@ class CommentsBottomSheetFragment : BottomSheetDialogFragment() {
             postComment()
         }
         binding.closeButton.setOnClickListener {
-//            val intent = Intent(activity, MainActivity::class.java)
-//            startActivity(intent)
             dismiss()
         }
 
@@ -94,8 +104,6 @@ class CommentsBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     internal fun loadComments() {
-        val client = OkHttpClient()
-        val mediaType = "application/json; charset=utf-8".toMediaType()
         val requestBody = JSONObject().apply {
             put("whisperNo", whisperNo)
         }.toString().toRequestBody(mediaType)
@@ -148,8 +156,6 @@ class CommentsBottomSheetFragment : BottomSheetDialogFragment() {
         val commentText = binding.commentEditText.text.toString()
         if (commentText.isBlank()) return
 
-        val client = OkHttpClient()
-        val mediaType = "application/json; charset=utf-8".toMediaType()
         val requestBody = JSONObject().apply {
             put("userId", myApp.loginUserId) // Replace with actual user ID
             put("whisperNo", whisperNo)
@@ -175,5 +181,10 @@ class CommentsBottomSheetFragment : BottomSheetDialogFragment() {
                 }
             }
         })
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

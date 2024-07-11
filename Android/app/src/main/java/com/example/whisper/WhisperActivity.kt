@@ -9,22 +9,29 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.whisper.MyApplication.MyApplication
 import com.example.whisper.databinding.ActivityWhisperBinding
 import com.example.whisper.fragment.TimelineFragment
+import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.io.IOException
-
+import javax.inject.Inject
+@AndroidEntryPoint
 class WhisperActivity : AppCompatActivity() {
     private lateinit var binding: ActivityWhisperBinding
-    private lateinit var myApp: MyApplication
+    @Inject
+    lateinit var myApp: MyApplication
+
+    @Inject
+    lateinit var client: OkHttpClient
+
+    @Inject
+    lateinit var mediaType: MediaType
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityWhisperBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        myApp = application as MyApplication
 
         binding.wisperButton.setOnClickListener {
             val content = binding.wisperEdit.text.toString()
@@ -43,8 +50,6 @@ class WhisperActivity : AppCompatActivity() {
 
     private fun addWhisper(userId: String, content: String) {
         try {
-            val client = OkHttpClient()
-            val mediaType: MediaType = "application/json; charset=utf-8".toMediaType()
             val requestBody = JSONObject().apply {
                 put("userId", userId)
                 put("content", content.replace("\n", "\\n"))

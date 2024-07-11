@@ -10,25 +10,26 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.whisper.CommentsBottomSheetFragment
-import com.example.whisper.MyApplication.MyApplication
 import com.example.whisper.R
 import com.example.whisper.UserInfoActivity
 import com.example.whisper.databinding.RecycleCommentBinding
 import com.example.whisper.model.Comment
+import com.example.whisper.MyApplication.MyApplication
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
+import javax.inject.Inject
 
-class CommentsAdapter(
+class CommentsAdapter @Inject constructor(
     private val fragment: CommentsBottomSheetFragment?,
     private val activity: Activity,
-    private val comments: List<Comment>
+    private val comments: List<Comment>,
+    private val client: OkHttpClient,
+    private val myApp: MyApplication
 ) : RecyclerView.Adapter<CommentsAdapter.CommentViewHolder>() {
-
-    private val myApp = activity.application as MyApplication
 
     inner class CommentViewHolder(val binding: RecycleCommentBinding) : RecyclerView.ViewHolder(binding.root) {
 
@@ -80,7 +81,6 @@ class CommentsAdapter(
     }
 
     private fun deleteComment(whisperNo: Long, commentId: Long, userId: String) {
-        val client = OkHttpClient()
         val mediaType = "application/json; charset=utf-8".toMediaType()
         val requestBody = JSONObject().apply {
             put("whisperNo", whisperNo)

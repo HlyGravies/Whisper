@@ -12,7 +12,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.whisper.GoodListAdapter
+import com.example.whisper.adapter.GoodListAdapter
 import com.example.whisper.MyApplication.MyApplication
 import com.example.whisper.adapter.UserListAdapter
 import com.example.whisper.adapter.SearchAdapter
@@ -37,7 +37,9 @@ class SearchFragment : Fragment() {
     lateinit var myApp: MyApplication
     @Inject
     lateinit var client: OkHttpClient
-    private val mediaType = "application/json; charset=utf-8".toMediaType()
+    @Inject
+    lateinit var mediaType: MediaType
+
     private var selectedSection: String = "1" // Default to "User" tab
     private var handler: Handler? = null
     private var queryRunnable: Runnable? = null
@@ -272,7 +274,7 @@ class SearchFragment : Fragment() {
                 } else {
                     binding.errorText.visibility = View.GONE
                 }
-                val adapter = GoodListAdapter(requireActivity(), listWhisper)
+                val adapter = GoodListAdapter(requireActivity(), listWhisper, myApp.apiUrl)
                 binding.searchRecycle.adapter = adapter
                 adapter.notifyDataSetChanged()
             }

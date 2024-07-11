@@ -10,11 +10,16 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.whisper.MyApplication.MyApplication
 import com.example.whisper.databinding.ActivitySplashBinding
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class SplashActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySplashBinding
-    private lateinit var myApp: MyApplication
+
+    @Inject
+    lateinit var myApp: MyApplication
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

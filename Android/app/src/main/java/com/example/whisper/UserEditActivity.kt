@@ -18,6 +18,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.whisper.MyApplication.MyApplication
 import com.example.whisper.databinding.ActivityUserEditBinding
+import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -26,25 +27,29 @@ import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-
+import javax.inject.Inject
+@AndroidEntryPoint
 class UserEditActivity : AppCompatActivity() {
     private lateinit var binding: ActivityUserEditBinding
-    private lateinit var myApp: MyApplication
+    @Inject
+    lateinit var myApp: MyApplication
+
+    @Inject
+    lateinit var client: OkHttpClient
+
+    @Inject
+    lateinit var mediaType: MediaType
     private var selectedImageBitmap: Bitmap? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityUserEditBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        myApp = application as MyApplication
         requestUserInfo()
         setupListeners()
     }
 
     private fun requestUserInfo() {
-        val client = OkHttpClient()
-        val mediaType: MediaType = "application/json; charset=utf-8".toMediaType()
         val requestBody = "{\"userId\":\"${myApp.loginUserId}\"}"
         val request = Request.Builder()
             .url(myApp.apiUrl + "userInfo.php").post(requestBody.toRequestBody(mediaType))
@@ -134,7 +139,6 @@ class UserEditActivity : AppCompatActivity() {
     }
 
     private fun updateUserInfo() {
-        val client = OkHttpClient()
         val userName = binding.userNameEdit.text.toString()
         val profile = binding.profileEdit.text.toString()
 

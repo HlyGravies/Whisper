@@ -11,15 +11,24 @@ import com.example.whisper.adapter.FollowListAdapter
 import com.example.whisper.databinding.ActivityFollowListBinding
 import com.example.whisper.model.User
 import com.google.android.material.tabs.TabLayout
+import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
-
+import javax.inject.Inject
+@AndroidEntryPoint
 class FollowListActivity : AppCompatActivity() {
-    private val myApp: MyApplication by lazy { application as MyApplication }
+    @Inject
+    lateinit var myApp: MyApplication
+
+    @Inject
+    lateinit var client: OkHttpClient
+
+    @Inject
+    lateinit var mediaType: MediaType
     private var userId: String? = null
     private lateinit var binding: ActivityFollowListBinding
 
@@ -66,8 +75,6 @@ class FollowListActivity : AppCompatActivity() {
     }
 
     private fun getFollowInfoApiCall(isFollow: Boolean) {
-        val client = OkHttpClient()
-        val mediaType: MediaType = "application/json; charset=utf-8".toMediaType()
         val requestBody = JSONObject().apply {
             put("userId", userId)
         }.toString().toRequestBody(mediaType)
@@ -117,7 +124,7 @@ class FollowListActivity : AppCompatActivity() {
                                 binding.errorText.visibility = View.GONE
                                 binding.followRecycler.visibility = View.VISIBLE
                                 binding.followRecycler.layoutManager = LinearLayoutManager(this@FollowListActivity)
-                                val adapter = FollowListAdapter(this@FollowListActivity, list)
+                                val adapter = FollowListAdapter(this@FollowListActivity, list, myApp.apiUrl)
                                 binding.followRecycler.adapter = adapter
                                 adapter.notifyDataSetChanged()
                             }

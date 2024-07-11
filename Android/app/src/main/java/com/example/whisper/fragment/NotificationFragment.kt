@@ -13,27 +13,38 @@ import com.example.whisper.MyApplication.MyApplication
 import com.example.whisper.adapter.NotificationsAdapter
 import com.example.whisper.databinding.FragmentNotificationBinding
 import com.example.whisper.model.Notification
+import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class NotificationFragment : Fragment() {
 
-    private lateinit var binding: FragmentNotificationBinding
+    private var _binding: FragmentNotificationBinding? = null
+    private val binding get() = _binding!!
+
+    @Inject
+    lateinit var myApp: MyApplication
+
+    @Inject
+    lateinit var client: OkHttpClient
+
+    @Inject
+    lateinit var mediaType: MediaType
+
     private lateinit var notificationsAdapter: NotificationsAdapter
     private val notificationsList = mutableListOf<Notification>()
-    private lateinit var myApp: MyApplication
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentNotificationBinding.inflate(inflater, container, false)
-        myApp = activity?.application as MyApplication
+        _binding = FragmentNotificationBinding.inflate(inflater, container, false)
 
         setupRecyclerView()
         fetchNotifications()
@@ -41,18 +52,22 @@ class NotificationFragment : Fragment() {
         return binding.root
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun setupRecyclerView() {
-        notificationsAdapter = NotificationsAdapter(requireContext(), notificationsList)
-        binding.notificationsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        notificationsAdapter = NotificationsAdapter(requireContext(), notificationsList,client,myApp.apiUrl)
+        binding.notificationsRecyclerView.layoutManager = LinearLayoutManager(activity)
         binding.notificationsRecyclerView.adapter = notificationsAdapter
     }
 
     private fun fetchNotifications() {
-        val client = OkHttpClient()
-        val mediaType = "application/json; charset=utf-8".toMediaType()
         val requestBody = JSONObject().apply {
             put("userId", myApp.loginUserId)
         }.toString().toRequestBody(mediaType)
+
         val request = Request.Builder()
             .url("${myApp.apiUrl}getNotifications.php")
             .post(requestBody)
@@ -61,7 +76,7 @@ class NotificationFragment : Fragment() {
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 activity?.runOnUiThread {
-                    Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(activity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
 
@@ -72,17 +87,16 @@ class NotificationFragment : Fragment() {
                     val jsonResponse = JSONObject(responseBody)
                     if (jsonResponse.has("error")) {
                         activity?.runOnUiThread {
-                            Toast.makeText(requireContext(), jsonResponse.getString("error"), Toast.LENGTH_LONG).show()
+                            Toast.makeText(activity, jsonResponse.getString("error"), Toast.LENGTH_LONG).show()
                         }
                     } else {
                         val likes = jsonResponse.getJSONArray("likes")
                         val comments = jsonResponse.getJSONArray("comments")
-
                         parseNotifications(likes, comments)
                     }
                 } catch (e: JSONException) {
                     activity?.runOnUiThread {
-                        Toast.makeText(requireContext(), "Error parsing the response", Toast.LENGTH_LONG).show()
+                        Toast.makeText(activity, "Error parsing the response", Toast.LENGTH_LONG).show()
                     }
                 }
             }

@@ -8,16 +8,19 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.example.whisper.MyApplication.MyApplication
 import com.example.whisper.R
 import com.example.whisper.UserInfoActivity
 import com.example.whisper.databinding.RecyclerFollowBinding
-import com.example.whisper.fragment.ProfileFragment
 import com.example.whisper.model.User
+import dagger.hilt.android.scopes.ActivityScoped
+import javax.inject.Inject
 
-class FollowListAdapter(private val activity: Activity, private val dataset: MutableList<User>) : RecyclerView.Adapter<FollowListAdapter.ViewHolder>() {
-
-    private val myApp = activity.application as MyApplication
+@ActivityScoped
+class FollowListAdapter @Inject constructor(
+    private val activity: Activity,
+    private val dataset: MutableList<User>,
+    private val apiUrl: String
+) : RecyclerView.Adapter<FollowListAdapter.ViewHolder>() {
 
     inner class ViewHolder(val binding: RecyclerFollowBinding) : RecyclerView.ViewHolder(binding.root) {
         val context: Context = binding.root.context
@@ -26,7 +29,7 @@ class FollowListAdapter(private val activity: Activity, private val dataset: Mut
             binding.userImage.setOnClickListener {
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
-                    val intent = Intent(context, ProfileFragment::class.java)
+                    val intent = Intent(context, UserInfoActivity::class.java)
                     val userId = dataset[position].userId
                     intent.putExtra("userId", userId)
                     context.startActivity(intent)
@@ -46,7 +49,7 @@ class FollowListAdapter(private val activity: Activity, private val dataset: Mut
         holder.binding.followCntText.text = user.followCount.toString()
         holder.binding.followerCntText.text = user.followerCount.toString()
         Glide.with(holder.binding.userImage.context)
-            .load(myApp.apiUrl + user.iconPath) // URL của hình ảnh
+            .load(apiUrl + user.iconPath) // URL của hình ảnh
             .diskCacheStrategy(DiskCacheStrategy.NONE) // Disable cache
             .skipMemoryCache(true)
             .placeholder(R.drawable.loading)

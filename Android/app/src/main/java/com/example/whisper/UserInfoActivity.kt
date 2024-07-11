@@ -14,17 +14,26 @@ import com.example.whisper.MyApplication.MyApplication
 import com.example.whisper.databinding.ActivityUserInfoBinding
 import com.example.whisper.model.Whisper
 import com.google.android.material.tabs.TabLayout
+import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
-
+import javax.inject.Inject
+@AndroidEntryPoint
 class UserInfoActivity : AppCompatActivity() , OnDataRefreshNeededListener {
 
     private lateinit var binding: ActivityUserInfoBinding
-    private val myApp: MyApplication by lazy { application as MyApplication }
+    @Inject
+    lateinit var myApp: MyApplication
+
+    @Inject
+    lateinit var client: OkHttpClient
+
+    @Inject
+    lateinit var mediaType: MediaType
     private var userId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -90,8 +99,6 @@ class UserInfoActivity : AppCompatActivity() , OnDataRefreshNeededListener {
     }
 
     private fun getUserGoodWhispersApiCall() {
-        val client = OkHttpClient()
-        val mediaType: MediaType = "application/json; charset=utf-8".toMediaType()
         val requestBody = JSONObject().apply {
             put("userId", userId)
             put("loginUserId", myApp.loginUserId)
@@ -162,8 +169,6 @@ class UserInfoActivity : AppCompatActivity() , OnDataRefreshNeededListener {
     }
 
     private fun getUserInfoApiCall() {
-        val client = OkHttpClient()
-        val mediaType: MediaType = "application/json; charset=utf-8".toMediaType()
         val requestBody = JSONObject().apply {
             put("userId", userId)
             put("loginUserId", myApp.loginUserId)
@@ -221,8 +226,6 @@ class UserInfoActivity : AppCompatActivity() , OnDataRefreshNeededListener {
     }
 
     private fun getFollowInfoApiCall() {
-        val client = OkHttpClient()
-        val mediaType: MediaType = "application/json; charset=utf-8".toMediaType()
         val requestBody = JSONObject().apply {
             put("userId", myApp.loginUserId)
         }.toString().toRequestBody(mediaType)
@@ -275,8 +278,6 @@ class UserInfoActivity : AppCompatActivity() , OnDataRefreshNeededListener {
     }
 
     private fun getUserWhispersApiCall() {
-        val client = OkHttpClient()
-        val mediaType: MediaType = "application/json; charset=utf-8".toMediaType()
         val requestBody = JSONObject().apply {
             put("userId", userId)
             put("loginUserId", myApp.loginUserId)
@@ -349,8 +350,6 @@ class UserInfoActivity : AppCompatActivity() , OnDataRefreshNeededListener {
     }
 
     private fun followManageApiCall(followUserId: String, followFlg: Boolean) {
-        val client = OkHttpClient()
-        val mediaType: MediaType = "application/json; charset=utf-8".toMediaType()
         val requestBody = JSONObject().apply {
             put("userId", myApp.loginUserId)
             put("followUserId", followUserId)
