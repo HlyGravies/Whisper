@@ -43,7 +43,7 @@ class GoodListAdapter @Inject constructor(
         val whisper = dataset[position]
 
         holder.binding.userNameText.text = whisper.userName
-        holder.binding.whisperText.text = whisper.content
+        holder.binding.whisperText.text = whisper.content.replace("\\n", "\n")
         holder.binding.goodCntText.text = whisper.goodCount.toString()
         Glide.with(holder.binding.userImage.context)
             .load(apiUrl + whisper.iconPath)

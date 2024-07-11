@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.whisper.MyApplication.MyApplication
 import com.example.whisper.adapter.CommentsAdapter
 import com.example.whisper.databinding.ActivityWhisperDetailBinding
@@ -140,11 +141,16 @@ class WhisperDetailActivity : AppCompatActivity() {
 
     private fun setupWhisperDetails() {
         binding.userNameText.text = whisper.userName
-        binding.whisperText.text = whisper.content
+        binding.whisperText.text = whisper.content.replace("\\n", "\n")
         binding.goodCountText.text = whisper.goodCount.toString()
         binding.cmtCountText.text = whisper.commentCount.toString()
         binding.goodImage.setImageResource(if (whisper.goodFlg) R.drawable.ic_star_filled else R.drawable.ic_star_placeholder)
-        Glide.with(this).load(myApp.apiUrl + whisper.iconPath).into(binding.userImage)
+        Glide.with(this).load(myApp.apiUrl + whisper.iconPath)
+            .diskCacheStrategy(DiskCacheStrategy.NONE) // Disable cache
+            .skipMemoryCache(true)
+            .placeholder(R.drawable.loading)
+            .error(R.drawable.avatar)
+            .into(binding.userImage)
 
         binding.goodImage.setOnClickListener {
             toggleLike()
