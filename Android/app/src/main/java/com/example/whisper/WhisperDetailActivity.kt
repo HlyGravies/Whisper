@@ -203,6 +203,7 @@ class WhisperDetailActivity : AppCompatActivity() {
                         }
                     } else {
                         val comments = jsonResponse.getJSONArray("comments")
+                        commentList.clear()
                         for (i in 0 until comments.length()) {
                             val commentData = comments.getJSONObject(i)
                             val comment = Comment(
