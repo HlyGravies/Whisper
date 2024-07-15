@@ -1,5 +1,6 @@
 package com.example.whisper
 
+import android.annotation.SuppressLint
 import com.example.whisper.Polling.NotificationService
 import android.content.BroadcastReceiver
 import android.content.Context
