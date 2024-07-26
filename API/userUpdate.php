@@ -15,8 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $errorNums = validateUserUpdateData($pdo, $userData);
     if ($errorNums === null){
         $iconPath = "";
-        if (isset($_FILES['iconPath'])){
-            if ($_FILES['iconPath']['error'] == 0) {
+        if (isset($_FILES['iconPath']) && $_FILES['iconPath']['error'] == 0) {
             $targetDir = "images/";
             if (!file_exists($targetDir)) {
                 mkdir($targetDir, 0777, true);
@@ -38,8 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $response['result'] = "error";
                 $response['errorDetails'] = "Chỉ cho phép các định dạng JPG, JPEG, PNG.";
             }
-        } else {
-            // Có lỗi xảy ra, cập nhật errorDetails
+        } else if (isset($_FILES['iconPath'])) {
             switch ($_FILES['iconPath']['error']) {
                 case UPLOAD_ERR_INI_SIZE:
                 case UPLOAD_ERR_FORM_SIZE:
@@ -49,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $response['errorDetails'] = "File chỉ được tải lên một phần.";
                     break;
                 case UPLOAD_ERR_NO_FILE:
-                    $response['errorDetails'] = "Không có file nào được tải lên.";
+                    // Nếu không có file nào được tải lên thì bỏ qua lỗi này
                     break;
                 case UPLOAD_ERR_NO_TMP_DIR:
                     $response['errorDetails'] = "Thiếu thư mục tạm.";
@@ -64,28 +62,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $response['errorDetails'] = "Lỗi không xác định.";
                     break;
             }
-            $response['result'] = "error";
+            if ($response['errorDetails'] !== null) {
+                $response['result'] = "error";
+            }
         }
-    } else {
-        $response['result'] = "error";
-        $response['errorDetails'] = "Không tìm thấy file 'iconPath'.";
-    }
 
         if ($response['result'] === "success") {
             $sql = "UPDATE user
                 SET userName = :userName,
-                    profile = :profile,
-                    iconPath = :iconPath    
-                WHERE userId = :userId;
-                ";
+                    profile = :profile";
+            if (!empty($iconPath)) {
+                $sql .= ", iconPath = :iconPath";
+            }
+            $sql .= " WHERE userId = :userId;";
+            
             try {
                 $stmt = $pdo->prepare($sql);
                 $stmt->bindParam(':userId', $userData['userId']);
                 $stmt->bindParam(':userName', $userData['userName']);
                 $stmt->bindParam(':profile', $userData['profile']);
-                $stmt->bindParam(':iconPath', $iconPath);
+                if (!empty($iconPath)) {
+                    $stmt->bindParam(':iconPath', $iconPath);
+                }
                 $stmt->execute();
-                $userData = getUserInfo($pdo, $userData['userId']);;
+                $userData = getUserInfo($pdo, $userData['userId']);
                 $response['result'] = "success";
                 $response['userData'] = $userData;
             } catch (PDOException $e) {

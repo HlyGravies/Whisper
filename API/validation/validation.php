@@ -40,32 +40,34 @@
         }  
     }
 
-    // function validateUserUpdateData($pdo, $userUpdateData){
-    //     $errorNums = array();
-    //     if (empty($userUpdateData['userId'])) {
-    //         $errorNums[] = "006";
-    //     } elseif (strlen($userUpdateData['userId']) > 30) {
-    //         $errorNums[] = "ERR_USERID_TOOLONG";
-    //     }
-    //     if (empty($userUpdateData['userName'])) {
-    //         $errorNums[] = "011";
-    //     } elseif (strlen($userUpdateData['userName']) > 20) {
-    //         $errorNums[] = "ERR_USERNAME_TOOLONG";
-    //     }
-    //     // if (empty($userUpdateData['password'])) {
-    //     //     $errorNums[] = "007";
-    //     // } elseif (strlen($userUpdateData['password']) > 64) {
-    //     //     $errorNums[] = "ERR_PASSWORD_TOOLONG";
-    //     // }
-    //     if(mb_strlen($userUpdateData['profile'], 'UTF-8') > 200){
-    //         $errorNums[] = "ERR_PROFILE_TOOLONG";
-    //     }
-    //     if(!empty($errorNums)){
-    //         return $errorNums;
-    //     } else {
-    //         return null;
-    //     }  
-    // }
+    function validateUserData($pdo, $userData) {
+        $errorNums = [];
+        
+        // Check if userId is empty
+        if (empty($userData['userId'])) {
+            $errorNums[] = "001"; // Example error code for empty userId
+        }
+        
+        // Check if userName is empty
+        if (empty($userData['userName'])) {
+            $errorNums[] = "002"; // Example error code for empty userName
+        }
+        
+        // Check if password is empty
+        if (empty($userData['password'])) {
+            $errorNums[] = "003"; // Example error code for empty password
+        }
+        
+        // Check if userId already exists in the database
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM user WHERE userId = :userId");
+        $stmt->bindParam(':userId', $userData['userId']);
+        $stmt->execute();
+        if ($stmt->fetchColumn() > 0) {
+            $errorNums[] = "004"; // Example error code for duplicate userId
+        }
+        
+        return empty($errorNums) ? null : $errorNums;
+    }
 
     function validateLoginData($loginData){
         $errorNums;

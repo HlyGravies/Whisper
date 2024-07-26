@@ -1,3 +1,5 @@
+
+//min
 <?php
 require_once 'mysqlConnect.php';
 require_once 'errorMsgs.php';

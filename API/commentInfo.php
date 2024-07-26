@@ -1,3 +1,6 @@
+
+//min
+
 <?php
 require_once 'mysqlConnect.php';
 include("database/database.php");

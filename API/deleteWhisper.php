@@ -20,19 +20,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errorNums[] = 'ERR_WHISPERNO__NOT_FOUND';
     }
     if (!isset($errorNums)){
-        $sql = "DELETE goodInfo FROM goodInfo WHERE whisperNo = :whisperNo";
-        $sql2 = "DELETE whisper FROM whisper WHERE whisperNo = :whisperNo";
+        $sql_delete_comments = "DELETE FROM comment WHERE whisperNo = :whisperNo";
+        $sql_delete_goodInfo = "DELETE FROM goodInfo WHERE whisperNo = :whisperNo";
+        $sql_delete_whisper = "DELETE FROM whisper WHERE whisperNo = :whisperNo";
+        
         try {
-            $stmt = $pdo->prepare($sql);
+            $pdo->beginTransaction();
+
+            $stmt = $pdo->prepare($sql_delete_comments);
             $stmt->bindParam('whisperNo', $data['whisperNo']);
             $stmt->execute();
 
-            $stmt2 = $pdo->prepare($sql2);
-            $stmt2->bindParam('whisperNo', $data['whisperNo']);
-            $stmt2->execute();
+            $stmt = $pdo->prepare($sql_delete_goodInfo);
+            $stmt->bindParam('whisperNo', $data['whisperNo']);
+            $stmt->execute();
 
+            $stmt = $pdo->prepare($sql_delete_whisper);
+            $stmt->bindParam('whisperNo', $data['whisperNo']);
+            $stmt->execute();
+
+            $pdo->commit();
+            
             $response['result'] = "success";
         } catch (PDOException $e) {
+            $pdo->rollBack();
             echo "Lỗi: " . $e->getMessage();
         }
     } else {

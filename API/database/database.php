@@ -349,6 +349,124 @@ function getCommentsByWhisperNo($pdo, $whisperNo) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+function getWhisperDetail($pdo, $whisperNo, $loginUserId) {
+    $sql = "SELECT 
+                whisper.whisperNo, 
+                whisper.userId, 
+                user.userName, 
+                user.iconPath,
+                whisper.postDate, 
+                whisper.content,
+                whisper.commentCount,
+                COUNT(DISTINCT goodInfo.userId) AS goodCount
+            FROM 
+                whisper
+            INNER JOIN 
+                user ON whisper.userId = user.userId
+            LEFT JOIN
+                goodInfo ON whisper.whisperNo = goodInfo.whisperNo
+            WHERE 
+                whisper.whisperNo = :whisperNo
+            GROUP BY
+                whisper.whisperNo, 
+                whisper.userId, 
+                user.userName, 
+                user.iconPath,
+                whisper.postDate, 
+                whisper.content,
+                whisper.commentCount
+            ORDER BY
+                whisper.postDate DESC";
+
+    try {
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':whisperNo', $whisperNo);
+        $stmt->execute();
+        $whisper = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($whisper) {
+            $whisper['goodFlg'] = getGoodFlag($pdo, $loginUserId, $whisperNo);
+        }
+
+        return $whisper;
+    } catch (PDOException $e) {
+        throw new Exception("Database error: " . $e->getMessage());
+    }
+}
+function getGoodFlagWhisper($pdo, $userId, $whisperNo) {
+    $sql = "SELECT COUNT(*) FROM goodInfo WHERE userId = :userId AND whisperNo = :whisperNo";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':userId', $userId);
+    $stmt->bindParam(':whisperNo', $whisperNo);
+    $stmt->execute();
+    $count = $stmt->fetchColumn();
+
+    return $count > 0 ? true : false;
+}
+
+function get_likes_notifications($pdo, $userId) {
+    $likesSql = "
+        SELECT 
+            goodInfo.whisperNo, 
+            user.userName AS likerName,
+            user.iconPath AS likerIcon,
+            whisper.content AS whisperContent,
+            whisper.imagePath AS whisperImage,
+            user.userId AS likerId,
+            goodInfo.isRead AS isRead
+        FROM goodInfo
+        INNER JOIN user ON goodInfo.userId = user.userId
+        INNER JOIN whisper ON goodInfo.whisperNo = whisper.whisperNo
+        WHERE whisper.userId = :userId AND goodInfo.userId != whisper.userId";
+    $likesStmt = $pdo->prepare($likesSql);
+    $likesStmt->bindParam(':userId', $userId);
+    $likesStmt->execute();
+    return $likesStmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function get_comments_notifications($pdo, $userId) {
+    $commentsSql = "
+        SELECT 
+            comment.whisperNo,
+            comment.userId,
+            user.userName AS commenterName,
+            user.iconPath AS commenterIcon,
+            comment.content AS commentContent,
+            comment.commentDate,
+            whisper.content AS whisperContent,
+            whisper.imagePath AS whisperImage,
+            user.userId AS commenterId,
+            comment.isRead AS isRead
+        FROM comment
+        INNER JOIN user ON comment.userId = user.userId
+        INNER JOIN whisper ON comment.whisperNo = whisper.whisperNo
+        WHERE whisper.userId = :userId AND comment.userId != whisper.userId";
+    $commentsStmt = $pdo->prepare($commentsSql);
+    $commentsStmt->bindParam(':userId', $userId);
+    $commentsStmt->execute();
+    return $commentsStmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function update_notification_status($pdo, $userId, $whisperNo, $type) {
+    if ($type == "like") {
+        $updateSql = "UPDATE goodInfo SET isRead = TRUE WHERE userId = :userId AND whisperNo = :whisperNo";
+    } else if ($type == "comment") {
+        $updateSql = "UPDATE comment SET isRead = TRUE WHERE userId = :userId AND whisperNo = :whisperNo";
+    } else {
+        throw new Exception("Invalid type parameter.");
+    }
+
+    $updateStmt = $pdo->prepare($updateSql);
+    $updateStmt->bindParam(':userId', $userId);
+    $updateStmt->bindParam(':whisperNo', $whisperNo);
+    $updateStmt->execute();
+
+    if ($updateStmt->rowCount() > 0) {
+        return true;
+    } else {
+        throw new Exception("Failed to update isRead status.");
+    }
+}
 
 
 ?> 
