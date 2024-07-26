@@ -153,6 +153,7 @@ class WhisperListAdapter(
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
+                Log.d("DeleteWhisper", "onResponse: $responseBody")
                 try {
                     val jsonResponse = JSONObject(responseBody)
                     if (jsonResponse.has("error")) {
