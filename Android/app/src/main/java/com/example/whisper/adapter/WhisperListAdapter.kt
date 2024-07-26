@@ -1,6 +1,7 @@
 package com.example.whisper
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,12 +9,14 @@ import android.view.ViewGroup
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.whisper.Interface.OnDataRefreshNeededListener
 import com.example.whisper.MyApplication.MyApplication
 import com.example.whisper.databinding.RecyclerWhisperBinding
+import com.example.whisper.fragment.TimelineFragment
 import com.example.whisper.model.Whisper
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
@@ -46,8 +49,9 @@ class WhisperListAdapter(
                 // Check ownership
                 if (whisper.userId == loginUserId) {
                     // User is the owner of the whisper
-                    popup.menu.findItem(R.id.delete_post).isVisible = true
+                    popup.menu.findItem(R.id.delete_post).isVisible = false
                     popup.menu.findItem(R.id.report_post).isVisible = false
+                    showOptionsDialog(position)
                 } else {
                     // User is not the owner of the whisper
                     popup.menu.findItem(R.id.delete_post).isVisible = false
@@ -88,6 +92,18 @@ class WhisperListAdapter(
         whispers.clear()
         notifyDataSetChanged()
     }
+    private fun showOptionsDialog(position: Int) {
+        val whisper = whispers[position]
+        val builder = AlertDialog.Builder(activity)
+        builder.setTitle("Options")
+        builder.setMessage("What do you want to do?")
+        builder.setPositiveButton("Delete") { _, _ ->
+            deleteWhisper(whisper.whisperNo)
+        }
+        builder.setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+        builder.create().show()
+    }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WhisperViewHolder {
         val binding = RecyclerWhisperBinding.inflate(LayoutInflater.from(activity), parent, false)
@@ -227,6 +243,7 @@ class WhisperListAdapter(
             }
         })
     }
+
 
     fun updateData(newData: List<Whisper>) {
         whispers.clear()
